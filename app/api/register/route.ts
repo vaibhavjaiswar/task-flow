@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import environment from "@/config/env";
 
-const PASSWORD_SALT = parseInt(process.env.PASSWORD_SALT || "10");
+const PASSWORD_SALT = environment.PASSWORD_SALT;
 
 export async function POST(req: Request) {
   try {
