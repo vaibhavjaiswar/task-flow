@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { ServerResponseType } from "@/types";
+import { ServerResponseType } from "@/types/api-response";
 
 export async function GET(): Promise<NextResponse<ServerResponseType>> {
   try {

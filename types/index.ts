@@ -1,16 +1,10 @@
-export interface SuccessResponse<T = unknown> {
-  ok: true;
-  message: string;
-  data?: T;
+export interface LoginFormInputs {
+  email: string;
+  password: string;
 }
 
-export interface ErrorResponse {
-  ok: false;
-  message: string;
-  error?: {
-    code?: string | number;
-    detail?: string;
-  };
+export interface RegisterFormInputs {
+  name: string;
+  email: string;
+  password: string;
 }
-
-export type ServerResponseType<T = unknown> = SuccessResponse<T> | ErrorResponse;
