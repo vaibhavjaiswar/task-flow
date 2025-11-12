@@ -2,16 +2,20 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import environment from "@/config/env";
+import { ServerResponseType } from "@/types";
+import { LoginResponseType } from "@/types/api-response";
 
 const PASSWORD_SALT = environment.PASSWORD_SALT;
 
-export async function POST(req: Request) {
+export async function POST(
+  req: Request
+): Promise<NextResponse<ServerResponseType<LoginResponseType>>> {
   try {
     const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
-        { message: "Email and password are required." },
+        { ok: false, message: "Email and password are required." },
         { status: 400 }
       );
     }
@@ -19,7 +23,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return NextResponse.json(
-        { message: `User with email ${email} is not registered.` },
+        { ok: false, message: `User with email ${email} is not registered.` },
         { status: 404 }
       );
     }
@@ -28,7 +32,7 @@ export async function POST(req: Request) {
 
     if (!isPasswordCorrect) {
       return NextResponse.json(
-        { message: "Invalid credentials." },
+        { ok: false, message: "Invalid credentials." },
         { status: 401 }
       );
     }
@@ -41,6 +45,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(
       {
+        ok: true,
         message: "User authenticated successfully.",
         data: { user: responseData },
       },
@@ -50,7 +55,7 @@ export async function POST(req: Request) {
     console.error("User login error:", error);
 
     return NextResponse.json(
-      { message: "Internal server error." },
+      { ok: false, message: "Internal server error." },
       { status: 500 }
     );
   }

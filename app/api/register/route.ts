@@ -2,16 +2,20 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import environment from "@/config/env";
+import { ServerResponseType } from "@/types";
+import { RegisterResponseType } from "@/types/api-response";
 
 const PASSWORD_SALT = environment.PASSWORD_SALT;
 
-export async function POST(req: Request) {
+export async function POST(
+  req: Request
+): Promise<NextResponse<ServerResponseType<RegisterResponseType>>> {
   try {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { message: "Namem email and password are required." },
+        { ok: false, message: "Namem email and password are required." },
         { status: 400 }
       );
     }
@@ -22,7 +26,7 @@ export async function POST(req: Request) {
 
     if (existingUser) {
       return NextResponse.json(
-        { message: "User with this email already exists." },
+        { ok: false, message: "User with this email already exists." },
         { status: 409 }
       );
     }
@@ -43,14 +47,18 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "User registered successfully.", data: newUser },
+      {
+        ok: true,
+        message: "User registered successfully.",
+        data: { user: newUser },
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error("User registration error:", error);
 
     return NextResponse.json(
-      { message: "Internal server error." },
+      { ok: false, message: "Internal server error." },
       { status: 500 }
     );
   }
