@@ -1,12 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import LoadingButton from "@/components/loading-button";
-
-interface LoginFormInputs {
-  email: string;
-  password: string;
-}
+import { login } from "@/apis";
+import { LoginFormInputs } from "@/types";
 
 export default function LoginForm() {
   const {
@@ -15,22 +13,16 @@ export default function LoginForm() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormInputs>();
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
-    console.log("Form submitted:", data);
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await login(data);
 
-      if (!res.ok) throw new Error("Login failed");
-
-      const result = await res.json();
-      console.log(result);
+      if (!response.ok) throw new Error("Login failed");
 
       reset();
+      router.replace("/dashboard");
     } catch (err: any) {
       console.error(err);
     }

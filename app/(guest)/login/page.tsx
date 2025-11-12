@@ -11,7 +11,9 @@ export default function LoginPage() {
 
         <LoginForm />
 
-        <Link href="/register" className="block w-max mx-auto text-sm">Do not have an account?</Link>
+        <Link href="/register" className="block w-max mx-auto text-sm">
+          Do not have an account?
+        </Link>
 
         <p className="text-sm text-slate-400 text-center font-light">
           &copy; Designed & developed by Vaibhav Jaiswar

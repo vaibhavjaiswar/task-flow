@@ -12,7 +12,9 @@ export default function IndexPage() {
           </span>
         </h1>
 
-        <p className="-mt-2 text-center font-light">Plan, track, and deliver.</p>
+        <p className="-mt-2 text-center font-light">
+          Plan, track, and deliver.
+        </p>
         <p className="text-sm text-center font-light">
           A lightweight task management platform designed for teams who value
           simplicity, clarity, and productivity.
@@ -34,10 +36,16 @@ export default function IndexPage() {
         </ul>
 
         <div className="max-w-md mx-auto flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
-          <Link href="/login" className="flex-1 primary-button w-full sm:w-auto text-center hover:text-slate-100! no-underline!">
+          <Link
+            href="/login"
+            className="flex-1 primary-button w-full sm:w-auto text-center hover:text-slate-100! no-underline!"
+          >
             Log in
           </Link>
-          <Link href="/register" className="flex-1 secondary-button w-full sm:w-auto text-center hover:text-slate-800! no-underline!">
+          <Link
+            href="/register"
+            className="flex-1 secondary-button w-full sm:w-auto text-center hover:text-slate-800! no-underline!"
+          >
             Create account
           </Link>
         </div>

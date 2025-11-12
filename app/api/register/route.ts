@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import environment from "@/config/env";
-import { ServerResponseType } from "@/types";
-import { RegisterResponseType } from "@/types/api-response";
+import { RegisterResponseType, ServerResponseType } from "@/types/api-response";
 
 const PASSWORD_SALT = environment.PASSWORD_SALT;
 
@@ -15,7 +14,7 @@ export async function POST(
 
     if (!name || !email || !password) {
       return NextResponse.json(
-        { ok: false, message: "Namem email and password are required." },
+        { ok: false, message: "Name, email and password are required." },
         { status: 400 }
       );
     }

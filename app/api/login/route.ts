@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import environment from "@/config/env";
-import { ServerResponseType } from "@/types";
-import { LoginResponseType } from "@/types/api-response";
+import { LoginResponseType, ServerResponseType } from "@/types/api-response";
 
 const PASSWORD_SALT = environment.PASSWORD_SALT;
 

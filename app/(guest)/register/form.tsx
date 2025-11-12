@@ -1,13 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import LoadingButton from "@/components/loading-button";
-
-interface RegisterFormInputs {
-  name: string;
-  email: string;
-  password: string;
-}
+import { register as registerUser } from "@/apis";
+import { RegisterFormInputs } from "@/types";
 
 export default function RegisterForm() {
   const {
@@ -17,6 +14,7 @@ export default function RegisterForm() {
     setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormInputs>();
+  const router = useRouter();
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (rawData) => {
     const trimmedName = rawData.name.trim();
@@ -28,21 +26,14 @@ export default function RegisterForm() {
       return;
     }
     const data = rawData;
-    console.log("Register form submitted:", data);
 
     try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+      const response = await registerUser(data);
 
-      if (!res.ok) throw new Error("Registration failed");
-
-      const result = await res.json();
-      console.log(result);
+      if (!response.ok) throw new Error("Registration failed");
 
       reset();
+      router.push("/login");
     } catch (err: any) {
       console.error(err);
     }
