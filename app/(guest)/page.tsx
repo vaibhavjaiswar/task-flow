@@ -7,8 +7,8 @@ export default function IndexPage() {
       <section className="grow sm:grow-0 w-full sm:max-w-xl md:max-w-2xl px-6 py-16 sm:p-10 sm:pb-6 bg-white rounded-lg shadow-2xl space-y-8 sm:space-y-4">
         <h1 className="text-5xl text-center font-light">
           Welcome to{" "}
-          <span className="text-slate-800 font-semibold rounded-lg">
-            TaskFlow
+          <span className="text-slate-800 font-normal rounded-lg">
+            Task<strong>Flow</strong>
           </span>
         </h1>
 

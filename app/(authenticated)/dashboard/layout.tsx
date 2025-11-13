@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ToastProvider from "@/context/toast-context";
 import "@/app/globals.css";
+import Link from "next/link";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -18,9 +19,26 @@ export default function DashboardLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900`}
+        className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900 bg-slate-100`}
       >
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          <header className="sticky top-0 shadow-lg">
+            <nav className="side-px  py-3 text-slate-100 bg-slate-800">
+              <Link
+                href="/dashboard"
+                className="text-lg text-slate-100! no-underline!"
+              >
+                Task<strong>Flow</strong>
+              </Link>
+            </nav>
+          </header>
+          <main className="min-h-dvh">{children}</main>
+          <footer>
+            <p className="side-px py-1 text-sm text-slate-400 text-center font-light">
+              &copy; Designed & developed by Vaibhav Jaiswar
+            </p>
+          </footer>
+        </ToastProvider>
       </body>
     </html>
   );
