@@ -1,14 +1,9 @@
 "use client";
 
-import Toast from "@/components/toast";
-import { generateRandomString } from "@/utils";
 import { createContext, ReactNode, useContext, useState } from "react";
-import { createPortal } from "react-dom";
-
-interface ToastType {
-  id: string;
-  message: string;
-}
+import Toast from "@/components/toast";
+import { ToastType } from "@/types/ui";
+import { generateRandomString } from "@/utils";
 
 interface ToastContextType {
   showToast: (message: Omit<ToastType, "id">) => void;
@@ -26,8 +21,12 @@ const ToastContext = createContext<ToastContextType>({
 export default function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
-  const showToast = ({ message }: Omit<ToastType, "id">) => {
-    const newToast: ToastType = { id: generateRandomString(), message };
+  const showToast = ({ message, type = "neutral" }: Omit<ToastType, "id">) => {
+    const newToast: ToastType = {
+      id: `(${(toasts.length + 1).toString()})${generateRandomString()}`,
+      message,
+      type,
+    };
     setToasts((toasts) => [...toasts, newToast]);
   };
 
@@ -38,15 +37,19 @@ export default function ToastProvider({ children }: ToastProviderProps) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      {typeof window !== "undefined" &&
-        createPortal(
-          <div className="absolute bottom-0 right-0 m-6 space-y-3">
-            {toasts.map(({ id, message }) => (
-              <Toast key={id} id={id} message={message} onClose={removeToast} />
-            ))}
-          </div>,
-          document.getElementById("toast-container") ?? document.body
-        )}
+      {toasts.length > 0 && (
+        <div className="fixed bottom-0 right-0 m-6 space-y-3">
+          {toasts.map(({ id, message, type }) => (
+            <Toast
+              key={id}
+              id={id}
+              message={message}
+              type={type}
+              onClose={removeToast}
+            />
+          ))}
+        </div>
+      )}
     </ToastContext.Provider>
   );
 }

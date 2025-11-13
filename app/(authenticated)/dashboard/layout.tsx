@@ -16,15 +16,12 @@ export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <ToastProvider>
-      <html lang="en">
-        <body
-          className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900`}
-        >
-          {children}
-          <div id="toast-container"></div>
-        </body>
-      </html>
-    </ToastProvider>
+    <html lang="en">
+      <body
+        className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900`}
+      >
+        <ToastProvider>{children}</ToastProvider>
+      </body>
+    </html>
   );
 }

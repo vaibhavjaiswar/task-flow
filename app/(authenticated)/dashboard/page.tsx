@@ -10,7 +10,7 @@ export default function DashboardPage() {
       <h1>Dashboard</h1>
       <button
         className="primary-button"
-        onClick={() => showToast({ message: "1234" })}
+        onClick={() => showToast({ message: "1234", type: "neutral" })}
       >
         Show Toast
       </button>
