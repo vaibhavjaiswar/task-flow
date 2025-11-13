@@ -35,7 +35,7 @@ export default function Toast({ id, message, type, onClose }: Props) {
 
   return (
     <div
-      className={`min-w-xs max-w-full sm:max-w-xs px-4 py-3 flex justify-between items-start gap-3 rounded shadow-sm hover:shadow-md ${variantStyles[type]}`}
+      className={`min-w-xs max-w-full sm:max-w-xs px-4 py-3 flex justify-between items-start gap-3 rounded-md shadow-sm hover:shadow-md ${variantStyles[type]}`}
     >
       {message}
       <button

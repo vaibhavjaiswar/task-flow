@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import LoadingButton from "@/components/loading-button";
 import { login } from "@/apis";
+import { useToast } from "@/context/toast-context";
 import { LoginFormInputs } from "@/types";
 
 export default function LoginForm() {
@@ -14,17 +15,30 @@ export default function LoginForm() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormInputs>();
   const router = useRouter();
+  const { showToast } = useToast();
 
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     try {
       const response = await login(data);
 
-      if (!response.ok) throw new Error("Login failed");
+      if (!response.ok) {
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
 
       reset();
-      router.replace("/dashboard");
+      router.push("/dashboard");
     } catch (err: any) {
       console.error(err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Error occured while registering!";
+      showToast({
+        type: "error",
+        message: "",
+      });
     }
   };
 

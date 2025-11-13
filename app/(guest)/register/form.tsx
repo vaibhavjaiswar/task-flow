@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import LoadingButton from "@/components/loading-button";
 import { register as registerUser } from "@/apis";
+import { useToast } from "@/context/toast-context";
 import { RegisterFormInputs } from "@/types";
 
 export default function RegisterForm() {
@@ -15,6 +16,7 @@ export default function RegisterForm() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormInputs>();
   const router = useRouter();
+  const { showToast } = useToast();
 
   const onSubmit: SubmitHandler<RegisterFormInputs> = async (rawData) => {
     const trimmedName = rawData.name.trim();
@@ -30,12 +32,24 @@ export default function RegisterForm() {
     try {
       const response = await registerUser(data);
 
-      if (!response.ok) throw new Error("Registration failed");
+      if (!response.ok) {
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
 
       reset();
       router.push("/login");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
+      const errorMessage =
+        err instanceof Error ? err.message : "Error occured while registering!";
+      showToast({
+        type: "error",
+        message: "",
+      });
     }
   };
 
