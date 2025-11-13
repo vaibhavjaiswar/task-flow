@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import ToastProvider from "@/context/toast-context";
 import "@/app/globals.css";
 
 const inter = Inter({
@@ -15,12 +16,15 @@ export default function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900`}
-      >
-        {children}
-      </body>
-    </html>
+    <ToastProvider>
+      <html lang="en">
+        <body
+          className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900`}
+        >
+          {children}
+          <div id="toast-container"></div>
+        </body>
+      </html>
+    </ToastProvider>
   );
 }
