@@ -41,6 +41,10 @@ export default function RegisterForm() {
       }
 
       reset();
+      showToast({
+        type: "success",
+        message: "Registeration successful. Please login to continue.",
+      });
       router.push("/login");
     } catch (err: unknown) {
       console.error(err);

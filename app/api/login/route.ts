@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
-import environment from "@/config/env";
+import prisma from "@/lib/prisma";
 import { LoginResponseType, ServerResponseType } from "@/types/api-response";
-
-const PASSWORD_SALT = environment.PASSWORD_SALT;
+import { generateJWT } from "@/utils/jwt";
 
 export async function POST(
   req: Request
@@ -36,17 +35,24 @@ export async function POST(
       );
     }
 
-    const responseData = {
-      email: user.email,
-      name: user.name,
-      createdAt: user.createdAt,
+    const token = generateJWT(email);
+
+    const responseData: LoginResponseType = {
+      user: {
+        email: user.email,
+        name: user.name,
+        createdAt: user.createdAt,
+      },
     };
+
+    const cookieStore = await cookies();
+    cookieStore.set("token", token);
 
     return NextResponse.json(
       {
         ok: true,
         message: "User authenticated successfully.",
-        data: { user: responseData },
+        data: responseData,
       },
       { status: 200 }
     );

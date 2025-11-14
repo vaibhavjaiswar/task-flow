@@ -37,7 +37,7 @@ export default function LoginForm() {
         err instanceof Error ? err.message : "Error occured while registering!";
       showToast({
         type: "error",
-        message: "",
+        message: errorMessage,
       });
     }
   };
