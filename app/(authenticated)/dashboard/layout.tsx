@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
 import ToastProvider from "@/context/toast-context";
 import "@/app/globals.css";
+import NavBar from "@/components/nav-bar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,6 +29,7 @@ export default async function DashboardLayout({
   try {
     jwt.verify(token, process.env.JWT_SECRET!);
   } catch (error) {
+    console.error(error);
     redirect("/login");
   }
 
@@ -38,17 +39,8 @@ export default async function DashboardLayout({
         className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900 bg-slate-100`}
       >
         <ToastProvider>
-          <header className="sticky top-0 shadow-lg">
-            <nav className="side-px  py-3 text-slate-100 bg-slate-800">
-              <Link
-                href="/dashboard"
-                className="text-lg text-slate-100! no-underline!"
-              >
-                Task<strong>Flow</strong>
-              </Link>
-            </nav>
-          </header>
-          <main className="min-h-dvh">{children}</main>
+          <NavBar />
+          <main className="min-h-[calc(100dvh-52px-28px)]">{children}</main>
           <footer>
             <p className="side-px py-1 text-sm text-slate-400 text-center font-light">
               &copy; Designed & developed by Vaibhav Jaiswar

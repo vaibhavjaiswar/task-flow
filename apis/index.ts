@@ -28,3 +28,14 @@ export async function login(formData: LoginFormInputs) {
 
   return data;
 }
+
+export async function logout() {
+  const response = await fetch("/api/logout", {
+    method: "POST",
+    credentials: "include",
+  });
+
+  const data: ServerResponseType = await response.json();
+
+  return data;
+}

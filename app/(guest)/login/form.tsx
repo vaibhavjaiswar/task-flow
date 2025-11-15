@@ -31,10 +31,12 @@ export default function LoginForm() {
 
       reset();
       router.push("/dashboard");
-    } catch (err: any) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       const errorMessage =
-        err instanceof Error ? err.message : "Error occured while registering!";
+        error instanceof Error
+          ? error.message
+          : "Error occured while registering!";
       showToast({
         type: "error",
         message: errorMessage,

@@ -11,14 +11,15 @@ export async function GET(): Promise<NextResponse<ServerResponseType>> {
       message: "Database connection successful ✅",
       data: { usersCount },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Database test failed:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Database connection failed ❌";
 
     return NextResponse.json(
       {
         ok: false,
-        message: "Database connection failed ❌",
-        error: error.message,
+        message: errorMessage,
       },
       { status: 500 }
     );

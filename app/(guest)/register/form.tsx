@@ -52,7 +52,7 @@ export default function RegisterForm() {
         err instanceof Error ? err.message : "Error occured while registering!";
       showToast({
         type: "error",
-        message: "",
+        message: errorMessage,
       });
     }
   };
