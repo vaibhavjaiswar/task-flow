@@ -25,7 +25,7 @@ export async function POST(
 
     if (existingUser) {
       return NextResponse.json(
-        { ok: false, message: "User with this email already exists." },
+        { ok: false, message: "User with this email already registered." },
         { status: 409 }
       );
     }
@@ -45,11 +45,15 @@ export async function POST(
       },
     });
 
+    const responseData: RegisterResponseType = {
+      user: newUser,
+    };
+
     return NextResponse.json(
       {
         ok: true,
         message: "User registered successfully.",
-        data: { user: newUser },
+        data: responseData,
       },
       { status: 201 }
     );
