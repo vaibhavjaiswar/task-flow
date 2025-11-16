@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { ServerResponseType } from "@/types/api-response";
+import { ServerError } from "@/utils/server-error";
 
 export async function GET(): Promise<NextResponse<ServerResponseType>> {
   try {
@@ -12,16 +13,18 @@ export async function GET(): Promise<NextResponse<ServerResponseType>> {
       data: { usersCount },
     });
   } catch (error) {
-    console.error("Database test failed:", error);
+    console.error("Database connection error:", error);
+
     const errorMessage =
-      error instanceof Error ? error.message : "Database connection failed ❌";
+      error instanceof ServerError
+        ? error.message
+        : "Database connection failed ❌";
+    const errorStatusCode =
+      error instanceof ServerError ? error.statusCode : 500;
 
     return NextResponse.json(
-      {
-        ok: false,
-        message: errorMessage,
-      },
-      { status: 500 }
+      { ok: false, message: errorMessage },
+      { status: errorStatusCode }
     );
   }
 }

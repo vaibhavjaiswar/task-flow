@@ -46,10 +46,14 @@ export default function RegisterForm() {
         message: "Registeration successful. Please login to continue.",
       });
       router.push("/login");
-    } catch (err: unknown) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
+
       const errorMessage =
-        err instanceof Error ? err.message : "Error occured while registering!";
+        error instanceof Error
+          ? error.message
+          : "Error occured while registering.";
+
       showToast({
         type: "error",
         message: errorMessage,

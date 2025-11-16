@@ -1,5 +1,3 @@
-"use client";
-
 import { Plus } from "@deemlol/next-icons";
 
 export default function DashboardPage() {

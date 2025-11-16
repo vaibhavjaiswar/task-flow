@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import jwt from "jsonwebtoken";
 import ToastProvider from "@/context/toast-context";
 import "@/app/globals.css";
 import NavBar from "@/components/nav-bar";
+import { isAuthTokenValid } from "@/utils/jwt";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -23,11 +23,12 @@ export default async function DashboardLayout({
   const token = cookieStore.get("token")?.value;
 
   if (!token) {
+    console.error("Authentication token not found. Redirecting to /login");
     redirect("/login");
   }
 
   try {
-    jwt.verify(token, process.env.JWT_SECRET!);
+    isAuthTokenValid(token);
   } catch (error) {
     console.error(error);
     redirect("/login");

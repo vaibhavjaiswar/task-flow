@@ -3,7 +3,8 @@ import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { LoginResponseType, ServerResponseType } from "@/types/api-response";
-import { generateJWT } from "@/utils/jwt";
+import { createNewToken } from "@/utils/jwt";
+import { ServerError } from "@/utils/server-error";
 
 export async function POST(
   req: Request
@@ -35,7 +36,11 @@ export async function POST(
       );
     }
 
-    const token = generateJWT(email);
+    const token = createNewToken(email);
+
+    if (!token) {
+      throw new ServerError("Error occured while creating new token.", 500);
+    }
 
     const responseData: LoginResponseType = {
       user: {
@@ -57,11 +62,18 @@ export async function POST(
       { status: 200 }
     );
   } catch (error) {
-    console.error("User login error:", error);
+    console.error("Login error:", error);
+
+    const errorMessage =
+      error instanceof ServerError
+        ? error.message
+        : "Error occured while logging in.";
+    const errorStatusCode =
+      error instanceof ServerError ? error.statusCode : 500;
 
     return NextResponse.json(
-      { ok: false, message: "Internal server error." },
-      { status: 500 }
+      { ok: false, message: errorMessage },
+      { status: errorStatusCode }
     );
   }
 }

@@ -33,10 +33,12 @@ export default function LoginForm() {
       router.push("/dashboard");
     } catch (error) {
       console.error(error);
+
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Error occured while registering!";
+          : "Error occured while registering.";
+
       showToast({
         type: "error",
         message: errorMessage,

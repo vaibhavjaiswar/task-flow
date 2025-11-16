@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import environment from "@/config/env";
 import { RegisterResponseType, ServerResponseType } from "@/types/api-response";
+import { ServerError } from "@/utils/server-error";
 
 const PASSWORD_SALT = environment.PASSWORD_SALT;
 
@@ -58,11 +59,18 @@ export async function POST(
       { status: 201 }
     );
   } catch (error) {
-    console.error("User registration error:", error);
+    console.error("Registration error:", error);
+
+    const errorMessage =
+      error instanceof ServerError
+        ? error.message
+        : "Error occured while registering user.";
+    const errorStatusCode =
+      error instanceof ServerError ? error.statusCode : 500;
 
     return NextResponse.json(
-      { ok: false, message: "Internal server error." },
-      { status: 500 }
+      { ok: false, message: errorMessage },
+      { status: errorStatusCode }
     );
   }
 }

@@ -8,3 +8,9 @@ export interface RegisterFormInputs {
   email: string;
   password: string;
 }
+
+export interface AuthTokenType {
+  useremail: string;
+  iat: number;
+  exp: number;
+}
