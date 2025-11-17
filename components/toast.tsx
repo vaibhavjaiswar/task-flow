@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { ToastVariantType } from "@/types/ui";
 import { X } from "@deemlol/next-icons";
 
@@ -28,11 +27,6 @@ const closeButtonStyles: Record<ToastVariantType, string> = {
 };
 
 export default function Toast({ id, message, type, onClose }: Props) {
-  useEffect(() => {
-    const timer = setTimeout(() => onClose(id), 5000);
-    return () => clearTimeout(timer);
-  }, [id, onClose]);
-
   return (
     <div
       className={`min-w-xs max-w-full sm:max-w-xs px-4 py-3 text-sm flex justify-between items-start gap-3 rounded-md shadow-sm hover:shadow-md ${variantStyles[type]}`}

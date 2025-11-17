@@ -22,12 +22,18 @@ export default function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
   const showToast = ({ message, type = "neutral" }: Omit<ToastType, "id">) => {
+    const toastId = `(${(
+      toasts.length + 1
+    ).toString()})${generateRandomString()}`;
     const newToast: ToastType = {
-      id: `(${(toasts.length + 1).toString()})${generateRandomString()}`,
+      id: toastId,
       message,
       type,
     };
+
     setToasts((toasts) => [...toasts, newToast]);
+
+    setTimeout(() => removeToast(toastId), 5000);
   };
 
   const removeToast = (id: string) => {
