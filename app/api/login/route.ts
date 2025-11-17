@@ -5,12 +5,13 @@ import prisma from "@/lib/prisma";
 import { LoginResponseType, ServerResponseType } from "@/types/api-response";
 import { createNewToken } from "@/utils/jwt";
 import { ServerError } from "@/utils/server-error";
+import { LoginFormInputs } from "@/types";
 
 export async function POST(
   req: Request
 ): Promise<NextResponse<ServerResponseType<LoginResponseType>>> {
   try {
-    const { email, password } = await req.json();
+    const { email, password } = (await req.json()) as LoginFormInputs;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -36,7 +37,7 @@ export async function POST(
       );
     }
 
-    const token = createNewToken(email);
+    const token = createNewToken({ email: user.email, id: user.id });
 
     if (!token) {
       throw new ServerError("Error occured while creating new token.", 500);

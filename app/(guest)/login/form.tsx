@@ -1,9 +1,10 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import LoadingButton from "@/components/loading-button";
-import { login } from "@/apis";
+import { fetchUser, login } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { LoginFormInputs } from "@/types";
 
@@ -45,6 +46,18 @@ export default function LoginForm() {
       });
     }
   };
+
+  useEffect(() => {
+    const checkIfLoggedIn = async () => {
+      const response = await fetchUser();
+
+      if (response.ok) {
+        redirect("/dashboard");
+      }
+    };
+
+    checkIfLoggedIn();
+  }, []);
 
   return (
     <form

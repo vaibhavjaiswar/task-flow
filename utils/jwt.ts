@@ -1,9 +1,14 @@
 import jwt from "jsonwebtoken";
 import environment from "@/config/env";
 
-export function createNewToken(tokenPayload: string): string | null {
+export interface TokenPayloadType {
+  id: number;
+  email: string;
+}
+
+export function createNewToken(tokenPayload: TokenPayloadType): string | null {
   try {
-    const token = jwt.sign({ tokenPayload }, environment.JWT_SECRET, {
+    const token = jwt.sign(tokenPayload, environment.JWT_SECRET, {
       expiresIn: environment.JWT_EXPIRATION_IN_SECONDS,
     });
     return token;
@@ -20,5 +25,18 @@ export function isAuthTokenValid(token: string): boolean {
   } catch (error) {
     console.error(error);
     return false;
+  }
+}
+
+export function getTokenPayloadByVerifying(
+  token: string
+): TokenPayloadType | null {
+  try {
+    const tokenPayload = jwt.verify(token, environment.JWT_SECRET);
+    const { email, id } = tokenPayload as TokenPayloadType;
+    return { email, id };
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 }

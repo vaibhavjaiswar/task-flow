@@ -1,5 +1,3 @@
-"use server";
-
 export class ServerError extends Error {
   public statusCode: number;
   // public isOperational: boolean;

@@ -13,7 +13,7 @@ export async function proxy(request: NextRequest) {
 
   if (!token) {
     return NextResponse.json(
-      { ok: false, message: "No token found." },
+      { ok: false, message: "Authentication token missing." },
       { status: 401 }
     );
   }

@@ -3,6 +3,7 @@ import {
   LoginResponseType,
   RegisterResponseType,
   ServerResponseType,
+  UserResponseType,
 } from "@/types/api-response";
 
 export async function register(formData: RegisterFormInputs) {
@@ -36,6 +37,17 @@ export async function logout() {
   });
 
   const data: ServerResponseType = await response.json();
+
+  return data;
+}
+
+export async function fetchUser() {
+  const response = await fetch("/api/user", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data: ServerResponseType<UserResponseType> = await response.json();
 
   return data;
 }

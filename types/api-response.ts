@@ -1,3 +1,5 @@
+import { User } from "@/prisma/generated/browser";
+
 export interface SuccessResponse<T = unknown> {
   ok: true;
   message: string;
@@ -23,4 +25,8 @@ export interface RegisterResponseType {
 
 export interface LoginResponseType {
   user: { email: string; name: string | null; createdAt: Date };
+}
+
+export interface UserResponseType {
+  user: Pick<User, "createdAt" | "email" | "id" | "name">;
 }
