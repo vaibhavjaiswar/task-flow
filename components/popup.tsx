@@ -88,8 +88,6 @@ export function PopupContent({
   stickTo = "left",
   ...rest
 }: PopupContentProps) {
-  // const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  // const portalElement = useRef<HTMLElement | null>(null);
   const [position, setPosition] = useState<PopupContentPositionType>();
   const popupContentRef = useRef<HTMLDivElement | null>(null);
   const { open, popupTriggerRef, setOpen } = usePopupContext();
@@ -101,8 +99,6 @@ export function PopupContent({
   const positionRight = position ? width - position.right + "px" : "auto";
 
   useEffect(() => {
-    // setPortalElement(document.body);
-    // portalElement.current = document.body;
     portalElementCurrent = document.body;
   }, []);
 
@@ -115,7 +111,6 @@ export function PopupContent({
     };
 
     if (open) {
-      console.log("added mouse down listner");
       document.addEventListener("mousedown", handleClick);
     }
 
@@ -132,8 +127,6 @@ export function PopupContent({
     }
   }, [popupTriggerRef]);
 
-  // if (!portalElement) return null;
-  // if (!portalElement.current) return null;
   if (!portalElementCurrent) return null;
 
   return createPortal(
