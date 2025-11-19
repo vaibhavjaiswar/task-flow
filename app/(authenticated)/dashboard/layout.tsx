@@ -27,10 +27,8 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  try {
-    isAuthTokenValid(token);
-  } catch (error) {
-    console.error(error);
+  const isTokenValid = isAuthTokenValid(token);
+  if (!isTokenValid) {
     redirect("/login");
   }
 
