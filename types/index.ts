@@ -9,6 +9,8 @@ export interface RegisterFormInputs {
   password: string;
 }
 
+export interface NewProjectFormInputs {}
+
 export interface AuthTokenType {
   useremail: string;
   iat: number;

@@ -1,14 +1,18 @@
+import Link from "next/link";
 import { Plus } from "@deemlol/next-icons";
 
 export default function DashboardPage() {
   return (
     <section className="max-w-7xl mx-auto side-px py-6">
       <div className="mb-6 flex justify-between items-center gap-4">
-        <h1 className="text-3xl">Your Projects</h1>
-        <button className="primary-button flex justify-center items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl font-semibold">Your Projects</h1>
+        <Link
+          href="/project/new"
+          className="primary-button text-slate-100! no-underline! flex justify-center items-center gap-2"
+        >
           <Plus size={16} />
           <span>New Project</span>
-        </button>
+        </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {projects.map(({ id, name, owner, tasks }) => {
