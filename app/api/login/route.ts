@@ -37,7 +37,7 @@ export async function POST(
       );
     }
 
-    const token = createNewToken({ email: user.email, id: user.id });
+    const token = createNewToken({ email: user.email, userId: user.id });
 
     if (!token) {
       throw new ServerError("Error occured while creating new token.", 500);

@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import environment from "@/config/env";
 
 export interface TokenPayloadType {
-  id: number;
+  userId: number;
   email: string;
 }
 
@@ -33,8 +33,8 @@ export function getTokenPayloadByVerifying(
 ): TokenPayloadType | null {
   try {
     const tokenPayload = jwt.verify(token, environment.JWT_SECRET);
-    const { email, id } = tokenPayload as TokenPayloadType;
-    return { email, id };
+    const { email, userId } = tokenPayload as TokenPayloadType;
+    return { email, userId };
   } catch (error) {
     console.error(error);
     return null;

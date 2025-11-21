@@ -28,7 +28,7 @@ export async function GET(
       );
     }
 
-    const { email, id } = payload;
+    const { email, userId: id } = payload;
 
     const user = await prisma.user.findUnique({ where: { email, id } });
 
