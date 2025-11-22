@@ -38,5 +38,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/logout", "/api/user"],
+  matcher: ["/api/logout", "/api/user:path*"],
 };

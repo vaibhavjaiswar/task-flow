@@ -8,6 +8,10 @@ input {
   @apply px-2 py-1 bg-slate-100 text-slate-900 border border-slate-200 rounded;
 }
 
+textarea {
+  @apply px-2 py-1 bg-slate-100 text-slate-900 border border-slate-200 rounded;
+}
+
 .button {
   @apply px-4 py-1.5 rounded cursor-pointer disabled:opacity-70;
 }
