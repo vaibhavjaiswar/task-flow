@@ -1,13 +1,21 @@
-import { LoginFormInputs, RegisterFormInputs } from "@/types";
+import {
+  LoginFormInputs,
+  NewProjectFormInputs,
+  RegisterFormInputs,
+} from "@/types";
 import {
   LoginResponseType,
   RegisterResponseType,
   ServerResponseType,
+  UserProjectsResponseType,
   UserResponseType,
 } from "@/types/api-response";
+import environment from "@/config/env";
+
+const SERVER_URL = environment.NEXT_PUBLIC_BASE_URL;
 
 export async function register(formData: RegisterFormInputs) {
-  const response = await fetch("/api/register", {
+  const response = await fetch(`${SERVER_URL}/api/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(formData),
@@ -19,7 +27,7 @@ export async function register(formData: RegisterFormInputs) {
 }
 
 export async function login(formData: LoginFormInputs) {
-  const response = await fetch("/api/login", {
+  const response = await fetch(`${SERVER_URL}/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(formData),
@@ -31,7 +39,7 @@ export async function login(formData: LoginFormInputs) {
 }
 
 export async function logout() {
-  const response = await fetch("/api/logout", {
+  const response = await fetch(`${SERVER_URL}/api/logout`, {
     method: "POST",
     credentials: "include",
   });
@@ -42,12 +50,37 @@ export async function logout() {
 }
 
 export async function fetchUser() {
-  const response = await fetch("/api/user", {
+  const response = await fetch(`${SERVER_URL}/api/user`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
 
   const data: ServerResponseType<UserResponseType> = await response.json();
+
+  return data;
+}
+
+export async function fetchUserProjects() {
+  const response = await fetch(`${SERVER_URL}/api/user/projects`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data: ServerResponseType<UserProjectsResponseType> =
+    await response.json();
+
+  return data;
+}
+
+export async function createNewProject(project: NewProjectFormInputs) {
+  const response = await fetch(`${SERVER_URL}/api/user/project`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(project),
+  });
+
+  const data: ServerResponseType<UserProjectsResponseType> =
+    await response.json();
 
   return data;
 }

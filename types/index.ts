@@ -9,7 +9,10 @@ export interface RegisterFormInputs {
   password: string;
 }
 
-export interface NewProjectFormInputs {}
+export interface NewProjectFormInputs {
+  name: string;
+  description: string;
+}
 
 export interface AuthTokenType {
   useremail: string;

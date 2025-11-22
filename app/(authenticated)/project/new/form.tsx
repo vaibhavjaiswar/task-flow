@@ -5,6 +5,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useToast } from "@/context/toast-context";
 import { NewProjectFormInputs } from "@/types";
 import LoadingButton from "@/components/loading-button";
+import { createNewProject } from "@/apis";
 
 export default function NewProjectForm() {
   const {
@@ -18,23 +19,30 @@ export default function NewProjectForm() {
 
   const onSubmit: SubmitHandler<NewProjectFormInputs> = async (data) => {
     try {
-      //   const response = await login(data);
-      //   if (!response.ok) {
-      //     showToast({
-      //       type: "error",
-      //       message: response.message,
-      //     });
-      //     return;
-      //   }
-      //   reset();
-      //   router.push("/dashboard");
+      const response = await createNewProject(data);
+
+      if (!response.ok) {
+        showToast({
+          type: "error",
+          message: response.message || "Failed to create project.",
+        });
+        return;
+      }
+
+      showToast({
+        type: "success",
+        message: `Project "${data.name}" created successfully`,
+      });
+
+      reset();
+      router.push("/dashboard");
     } catch (error) {
-      console.error(error);
+      console.error("Create project error:", error);
 
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Error occured while creating new project.";
+          : "An error occurred while creating the project.";
 
       showToast({
         type: "error",
@@ -44,21 +52,37 @@ export default function NewProjectForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg space-y-4">
-      {/* Email */}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="max-w-lg lg:max-w-2xl space-y-4"
+    >
+      {/* Project Name */}
       <label className="block">
         <span className="text-sm mb-1">Project Name</span>
         <input
-          type="email"
-          defaultValue={"user@email.com"}
+          type="text"
           placeholder="Enter project name..."
-          className="block w-full border rounded px-3 py-2"
-          {...register("projectName", {
+          className="block w-full"
+          {...register("name", {
             required: "Project name is required",
           })}
         />
-        {errors.projectName && (
-          <p className="text-xs text-red-500 mt-1">{errors.projectName.message}</p>
+        {errors.name && (
+          <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+        )}
+      </label>
+      {/* Description */}
+      <label className="block">
+        <span className="text-sm mb-1">Description</span>
+        <textarea
+          placeholder="Write your project's details..."
+          className="block w-full h-32 bg-white resize-y"
+          {...register("description")}
+        ></textarea>
+        {errors.description && (
+          <p className="text-xs text-red-500 mt-1">
+            {errors.description.message}
+          </p>
         )}
       </label>
       {/* Buttons */}
@@ -68,7 +92,7 @@ export default function NewProjectForm() {
           isLoading={isSubmitting}
           className="flex-1 primary-button w-full sm:w-auto"
         >
-          Log in
+          Create Project
         </LoadingButton>
 
         <button
