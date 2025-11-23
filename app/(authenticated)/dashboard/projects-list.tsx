@@ -40,16 +40,16 @@ export default function ProjectList() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="p-6 bg-white border border-slate-100 rounded-md shadow-md animate-pulse"
+            className="space-y-5 p-6 bg-white border border-slate-100 rounded-md shadow-md animate-pulse"
           >
-            <div className="h-8 bg-slate-200 rounded w-3/4 mb-3" />
-            <div className="h-6 bg-slate-200 rounded w-1/2 mb-5" />
+            <div className="h-8 bg-slate-200 rounded w-3/4" />
             <div className="mb-3 space-y-2">
               <div className="h-4 bg-slate-200 rounded w-full" />
               <div className="h-4 bg-slate-200 rounded w-2/3" />
               <div className="h-4 bg-slate-200 rounded w-5/6" />
             </div>
             <div className="space-y-2">
+              <div className="h-6 bg-slate-200 rounded w-1/2" />
               <div className="h-4 bg-slate-200 rounded w-2/6" />
               <div className="h-4 bg-slate-200 rounded w-2/3" />
             </div>
