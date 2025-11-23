@@ -31,7 +31,7 @@ export default function NewProjectForm() {
 
       showToast({
         type: "success",
-        message: `Project "${data.name}" created successfully`,
+        message: `Project "${data.name}" created successfully.`,
       });
 
       reset();

@@ -12,6 +12,7 @@
     "@deemlol/next-icons": "^0.1.9",
     "@prisma/client": "^6.19.0",
     "bcryptjs": "^3.0.3",
+    "dayjs": "^1.11.19",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.1",
     "react": "19.2.0",
