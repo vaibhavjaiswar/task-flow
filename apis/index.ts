@@ -5,6 +5,7 @@ import {
 } from "@/types";
 import {
   LoginResponseType,
+  ProjectResponseType,
   RegisterResponseType,
   ServerResponseType,
   UserProjectsResponseType,
@@ -80,6 +81,18 @@ export async function createNewProject(project: NewProjectFormInputs) {
   });
 
   const data: ServerResponseType<UserProjectsResponseType> =
+    await response.json();
+
+  return data;
+}
+
+export async function fetchUserProject(projectId: string) {
+  const response = await fetch(`${SERVER_URL}/api/user/project/${projectId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data: ServerResponseType<ProjectResponseType> =
     await response.json();
 
   return data;

@@ -35,3 +35,7 @@ export interface UserResponseType {
 export interface UserProjectsResponseType {
   projects: Project[];
 }
+
+export interface ProjectResponseType {
+  project: Project;
+}

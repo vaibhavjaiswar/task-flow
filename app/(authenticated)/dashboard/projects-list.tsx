@@ -5,29 +5,47 @@ import { useEffect, useState } from "react";
 import { fetchUserProjects } from "@/apis";
 import { Project } from "@/prisma/generated/client";
 import { timeAgo } from "@/utils";
+import { useToast } from "@/context/toast-context";
 
 export default function ProjectList() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { showToast } = useToast();
+
   const fetchProjectList = async () => {
-    setIsLoading(true);
-    const response = await fetchUserProjects();
-    const { ok, message } = response;
+    try {
+      setIsLoading(true);
+      const response = await fetchUserProjects();
+      const { ok, message } = response;
 
-    if (!ok) {
-      console.error(
-        "Error occured while fetching user's projects",
-        response.error
-      );
-      setError(message);
+      if (!ok) {
+        console.error(
+          "Error occured while fetching user's projects",
+          response.error
+        );
+        setError(message);
+        setIsLoading(false);
+        return;
+      }
+
+      setProjects(response.data?.projects || []);
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while registering.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
       setIsLoading(false);
-      return;
     }
-
-    setProjects(response.data?.projects || []);
-    setIsLoading(false);
   };
 
   useEffect(() => {
