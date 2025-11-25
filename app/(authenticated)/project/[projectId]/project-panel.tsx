@@ -1,20 +1,20 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { fetchUserProject } from "@/apis";
-import { Project } from "@/prisma/generated/client";
+import { useEffect, useState } from "react";
+import { fetchUserProject, updateUserProject } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
 import ProjectHeading from "./project-heading";
 import ProjectDescription from "./project-description";
 import Link from "next/link";
+import { ProjectWithUser } from "@/types/api-response";
 
 interface Props {
   projectId: string;
 }
 
 export default function ProjectPanel({ projectId }: Props) {
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<ProjectWithUser | null>(null);
   const [isFetchingProject, setIsFetchingProject] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +54,24 @@ export default function ProjectPanel({ projectId }: Props) {
     }
   };
 
+  const updateProjectHeading = async (projectName: string) => {
+    const response = await updateUserProject(projectId, { projectName });
+    if (response.ok) {
+      const project = response.data?.project;
+      if (project) setProject(project);
+    }
+    return response;
+  };
+
+  const updateProjectDescription = async (projectDescription: string) => {
+    const response = await updateUserProject(projectId, { projectDescription });
+    if (response.ok) {
+      const project = response.data?.project;
+      if (project) setProject(project);
+    }
+    return response;
+  };
+
   useEffect(() => {
     fetchUserProjectCall();
   }, []);
@@ -63,6 +81,20 @@ export default function ProjectPanel({ projectId }: Props) {
       <div className="min-h-[calc(100dvh-52px-28px)] max-w-7xl mx-auto side-px py-6 flex justify-center items-center gap-2">
         <Loader size={18} className="text-slate-800 animate-spin" />
         Loading project...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[calc(100dvh-52px-28px)] max-w-7xl mx-auto side-px py-6 flex justify-center items-center gap-2">
+        <AlertCircle size={40} className="text-slate-800" />
+        <h2 className="text-lg font-semibold text-slate-800">
+          Error retrieving your project
+        </h2>
+        <p className="text-slate-800">
+          {error || "An unknown error occurred while fetching your project."}
+        </p>
       </div>
     );
   }
@@ -81,8 +113,15 @@ export default function ProjectPanel({ projectId }: Props) {
 
   return (
     <div className="max-w-7xl mx-auto side-px py-6 space-y-4">
-      <ProjectHeading projectName={project?.name} />
-      <ProjectDescription description={project?.description} />
+      <ProjectHeading
+        projectName={project?.name}
+        onUpdateHeading={updateProjectHeading}
+      />
+      <ProjectDescription
+        description={project?.description}
+        onUpdateDescription={updateProjectDescription}
+      />
+      <p className="px-2">Created by: {project.user.name}</p>
     </div>
   );
 }

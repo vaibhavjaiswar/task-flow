@@ -1,5 +1,4 @@
-import { User } from "@/prisma/generated/browser";
-import { Project } from "@/prisma/generated/client";
+import { Project, User } from "@/prisma/generated/client";
 
 export interface SuccessResponse<T = unknown> {
   ok: true;
@@ -36,6 +35,10 @@ export interface UserProjectsResponseType {
   projects: Project[];
 }
 
+export type ProjectWithUser = Project & {
+  user: Pick<User, "createdAt" | "email" | "name">;
+};
+
 export interface ProjectResponseType {
-  project: Project;
+  project: ProjectWithUser;
 }

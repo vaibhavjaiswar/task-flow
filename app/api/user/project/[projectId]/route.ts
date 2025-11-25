@@ -34,6 +34,15 @@ export async function GET(
 
     const project = await prisma.project.findFirst({
       where: { id: projectId, userId },
+      include: {
+        user: {
+          select: {
+            createdAt: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
     });
 
     if (!project) {
@@ -60,6 +69,97 @@ export async function GET(
       error instanceof ServerError
         ? error.message
         : "An error occurred while fetching the project.";
+    const errorStatusCode =
+      error instanceof ServerError ? error.statusCode : 500;
+
+    return NextResponse.json(
+      { ok: false, message: errorMessage },
+      { status: errorStatusCode }
+    );
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ projectId: string }> }
+): Promise<NextResponse<ServerResponseType<ProjectResponseType>>> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { ok: false, message: "Authentication token missing." },
+        { status: 401 }
+      );
+    }
+
+    const payload = getTokenPayloadByVerifying(token);
+
+    if (!payload) {
+      return NextResponse.json(
+        { ok: false, message: "Authentication token invalid." },
+        { status: 401 }
+      );
+    }
+
+    const { userId } = payload;
+    const { projectId } = await params;
+
+    const body = await request.json();
+    const { name, description } = body;
+
+    if (!name && !description) {
+      return NextResponse.json(
+        { ok: false, message: "Nothing to update." },
+        { status: 400 }
+      );
+    }
+
+    const existingProject = await prisma.project.findFirst({
+      where: { id: projectId, userId },
+    });
+
+    if (!existingProject) {
+      return NextResponse.json(
+        { ok: false, message: "Project not found." },
+        { status: 404 }
+      );
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        name: name ?? existingProject.name,
+        description: description ?? existingProject.description,
+      },
+      include: {
+        user: {
+          select: {
+            createdAt: true,
+            email: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(
+      {
+        ok: true,
+        message: "Project updated successfully.",
+        data: { project: updatedProject },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Update project error:", error);
+
+    const errorMessage =
+      error instanceof ServerError
+        ? error.message
+        : "An error occurred while updating the project.";
+
     const errorStatusCode =
       error instanceof ServerError ? error.statusCode : 500;
 

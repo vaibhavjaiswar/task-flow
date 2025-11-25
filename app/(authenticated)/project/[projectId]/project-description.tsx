@@ -1,20 +1,57 @@
+import LoadingButton from "@/components/loading-button";
+import { useToast } from "@/context/toast-context";
+import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
 import { useRef, useState } from "react";
 
 interface Props {
   description: null | string;
+  onUpdateDescription: (
+    projectDescription: string
+  ) => Promise<ServerResponseType<ProjectResponseType>>;
 }
 
-export default function description({ description }: Props) {
+export default function description({
+  description,
+  onUpdateDescription,
+}: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [newDescription, setNewDescription] = useState(description ?? "");
+  const [isUpdating, setIsUpdating] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleNameChange = () => {
-    console.log("Change project description from");
-    console.log(description);
-    console.log("to");
-    console.log(newDescription);
-    setIsEditing(false);
+  const { showToast } = useToast();
+
+  const handleNameChange = async () => {
+    try {
+      // console.log("Change project description from");
+      // console.log(description);
+      // console.log("to");
+      // console.log(newDescription);
+      setIsUpdating(true);
+      const response = await onUpdateDescription(newDescription);
+      if (!response.ok) {
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while updating project name.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -46,12 +83,13 @@ export default function description({ description }: Props) {
         }}
       />
       {isEditing && (
-        <button
-          className="primary-button absolute top-full right-0 mt-2 shadow-lg z-10"
+        <LoadingButton
+          className="primary-button absolute top-full right-0 mt-2 shadow-lg z-10 disabled:opacity-100!"
           onMouseDown={handleNameChange}
+          isLoading={isUpdating}
         >
           Save
-        </button>
+        </LoadingButton>
       )}
     </div>
   );

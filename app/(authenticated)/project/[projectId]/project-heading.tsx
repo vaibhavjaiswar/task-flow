@@ -1,17 +1,54 @@
+import LoadingButton from "@/components/loading-button";
+import { useToast } from "@/context/toast-context";
+import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
 import { useRef, useState } from "react";
 
 interface Props {
   projectName: string;
+  onUpdateHeading: (
+    projectName: string
+  ) => Promise<ServerResponseType<ProjectResponseType>>;
 }
 
-export default function ProjectHeading({ projectName }: Props) {
+export default function ProjectHeading({
+  projectName,
+  onUpdateHeading,
+}: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(projectName);
+  const [isUpdating, setIsUpdating] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleNameChange = () => {
-    console.log(`Change project name from "${projectName}" to "${newName}"`);
-    setIsEditing(false);
+  const { showToast } = useToast();
+
+  const handleNameChange = async () => {
+    try {
+      // console.log(`Change project name from "${projectName}" to "${newName}"`);
+      setIsUpdating(true);
+      const response = await onUpdateHeading(newName);
+      if (!response.ok) {
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+      setIsEditing(false);
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while updating project name.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -43,12 +80,13 @@ export default function ProjectHeading({ projectName }: Props) {
         }}
       />
       {isEditing && (
-        <button
-          className="primary-button absolute top-full right-0 mt-2 shadow-lg z-10"
+        <LoadingButton
+          className="primary-button absolute top-full right-0 mt-2 shadow-lg z-10 disabled:opacity-100!"
           onMouseDown={handleNameChange}
+          isLoading={isUpdating}
         >
           Save
-        </button>
+        </LoadingButton>
       )}
     </div>
   );

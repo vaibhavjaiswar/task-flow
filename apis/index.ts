@@ -92,8 +92,30 @@ export async function fetchUserProject(projectId: string) {
     headers: { "Content-Type": "application/json" },
   });
 
-  const data: ServerResponseType<ProjectResponseType> =
-    await response.json();
+  const data: ServerResponseType<ProjectResponseType> = await response.json();
+
+  return data;
+}
+
+interface updateUserProjectArgsType {
+  projectName?: string;
+  projectDescription?: string;
+}
+
+export async function updateUserProject(
+  projectId: string,
+  { projectName, projectDescription }: updateUserProjectArgsType
+) {
+  const response = await fetch(`${SERVER_URL}/api/user/project/${projectId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: projectName,
+      description: projectDescription,
+    }),
+  });
+
+  const data: ServerResponseType<ProjectResponseType> = await response.json();
 
   return data;
 }
