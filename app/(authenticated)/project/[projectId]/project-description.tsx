@@ -63,12 +63,18 @@ export default function description({
           setTimeout(() => textareaRef.current?.focus());
         }}
       >
-        {isEditing ? newDescription : description}
-        {newDescription.endsWith("\n") && <br />}
+        {isEditing ? (
+          newDescription
+        ) : description ? (
+          description
+        ) : (
+          <span className="text-slate-400">No description provided...</span>
+        )}
+        {(newDescription.endsWith("\n") || newDescription === "") && <br />}
       </pre>
       <textarea
         ref={textareaRef}
-        className={`absolute top-0 bottom-0 left-0 right-0 block w-full resize-none ${
+        className={`absolute top-0 bottom-0 left-0 right-0 block w-full min-h-[33.6px] resize-none ${
           isEditing ? "opacity-100 visible" : "opacity-0 invisible"
         } shadow-lg`}
         value={newDescription}

@@ -1,13 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchUserProject, updateUserProject } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
 import ProjectHeading from "./project-heading";
 import ProjectDescription from "./project-description";
-import Link from "next/link";
 import { ProjectWithUser } from "@/types/api-response";
+import { timeAgo } from "@/utils";
 
 interface Props {
   projectId: string;
@@ -121,7 +122,27 @@ export default function ProjectPanel({ projectId }: Props) {
         description={project?.description}
         onUpdateDescription={updateProjectDescription}
       />
-      <p className="px-2">Created by: {project.user.name}</p>
+      <div className="mx-2 p-3 bg-slate-50 flex items-center gap-4 border border-slate-200 rounded-md">
+        {project.user.name && (
+          <div className="h-10 aspect-square text-lg text-slate-100 bg-slate-800 rounded-full flex justify-center items-center">
+            {project.user.name.charAt(0)}
+          </div>
+        )}
+        <div>
+          <p>{project.user.name}</p>
+          <p className="text-sm text-slate-400">Project Owner</p>
+        </div>
+      </div>
+      <div className="px-2 text-sm text-slate-400 space-y-1">
+        <p>
+          <span className="--text-slate-600 font-medium">Last updated:</span>{" "}
+          {timeAgo(project.updatedAt)}
+        </p>
+        <p>
+          <span className="--text-slate-600 font-medium">Created on:</span>{" "}
+          {new Date(project.createdAt).toLocaleString()}
+        </p>
+      </div>
     </div>
   );
 }
