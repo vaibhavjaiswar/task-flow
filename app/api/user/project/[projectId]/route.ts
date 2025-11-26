@@ -130,7 +130,7 @@ export async function PATCH(
     const updatedProject = await prisma.project.update({
       where: { id: projectId },
       data: {
-        name: name ?? existingProject.name,
+        name: name.trim() ?? existingProject.name,
         description: description ?? existingProject.description,
       },
       include: {

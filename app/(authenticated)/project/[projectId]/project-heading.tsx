@@ -23,7 +23,7 @@ export default function ProjectHeading({
 
   const handleNameChange = async () => {
     try {
-      // console.log(`Change project name from "${projectName}" to "${newName}"`);
+      if (isNameSame) return;
       setIsUpdating(true);
       const response = await onUpdateHeading(newName);
       if (!response.ok) {
@@ -50,6 +50,8 @@ export default function ProjectHeading({
       setIsUpdating(false);
     }
   };
+
+  const isNameSame = projectName === newName.trim();
 
   return (
     <div className="relative">
@@ -79,7 +81,7 @@ export default function ProjectHeading({
           }
         }}
       />
-      {isEditing && (
+      {isEditing && !isNameSame && (
         <LoadingButton
           className="primary-button absolute top-full right-0 mt-2 shadow-lg z-10 disabled:opacity-100!"
           onMouseDown={handleNameChange}

@@ -135,11 +135,11 @@ export default function ProjectPanel({ projectId }: Props) {
       </div>
       <div className="px-2 text-sm text-slate-400 space-y-1">
         <p>
-          <span className="--text-slate-600 font-medium">Last updated:</span>{" "}
+          <span className="font-medium">Last updated:</span>{" "}
           {timeAgo(project.updatedAt)}
         </p>
         <p>
-          <span className="--text-slate-600 font-medium">Created on:</span>{" "}
+          <span className="font-medium">Created on:</span>{" "}
           {new Date(project.createdAt).toLocaleString()}
         </p>
       </div>

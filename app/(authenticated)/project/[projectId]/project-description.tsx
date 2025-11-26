@@ -23,10 +23,7 @@ export default function description({
 
   const handleNameChange = async () => {
     try {
-      // console.log("Change project description from");
-      // console.log(description);
-      // console.log("to");
-      // console.log(newDescription);
+      if (isDescriptionSame) return;
       setIsUpdating(true);
       const response = await onUpdateDescription(newDescription);
       if (!response.ok) {
@@ -53,6 +50,8 @@ export default function description({
       setIsUpdating(false);
     }
   };
+
+  const isDescriptionSame = description === newDescription;
 
   return (
     <div className="relative">
@@ -88,7 +87,7 @@ export default function description({
           }
         }}
       />
-      {isEditing && (
+      {isEditing && !isDescriptionSame && (
         <LoadingButton
           className="primary-button absolute top-full right-0 mt-2 shadow-lg z-10 disabled:opacity-100!"
           onMouseDown={handleNameChange}
