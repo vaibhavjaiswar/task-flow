@@ -3,7 +3,7 @@ import NewProjectForm from "./form";
 export default function CreateNewProjectPage() {
   return (
     <section className="min-h-[calc(100dvh-52px-28px)] text-slate-800 bg-white">
-      <div className="max-w-7xl mx-auto side-px py-6">
+      <div className="max-w-[1440px] mx-auto side-px py-6">
         <div className="mb-4">
           <h1 className="text-2xl sm:text-3xl font-semibold">
             Create New Project

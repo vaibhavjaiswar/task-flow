@@ -7,7 +7,7 @@ import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
 import ProjectHeading from "./project-heading";
 import ProjectDescription from "./project-description";
-import { ProjectWithUser } from "@/types/api-response";
+import { ProjectWithDetails } from "@/types/api-response";
 import { timeAgo } from "@/utils";
 
 interface Props {
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function ProjectPanel({ projectId }: Props) {
-  const [project, setProject] = useState<ProjectWithUser | null>(null);
+  const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [isFetchingProject, setIsFetchingProject] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,7 +79,7 @@ export default function ProjectPanel({ projectId }: Props) {
 
   if (isFetchingProject) {
     return (
-      <div className="min-h-[calc(100dvh-52px-28px)] max-w-7xl mx-auto side-px py-6 flex justify-center items-center gap-2">
+      <div className="min-h-[calc(100dvh-52px-28px)] max-w-[1440px] mx-auto side-px py-6 flex justify-center items-center gap-2">
         <Loader size={18} className="text-slate-800 animate-spin" />
         Loading project...
       </div>
@@ -88,7 +88,7 @@ export default function ProjectPanel({ projectId }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-[calc(100dvh-52px-28px)] max-w-7xl mx-auto side-px py-6 flex justify-center items-center gap-2">
+      <div className="min-h-[calc(100dvh-52px-28px)] max-w-[1440px] mx-auto side-px py-6 flex justify-center items-center gap-2">
         <AlertCircle size={40} className="text-slate-800" />
         <h2 className="text-lg font-semibold text-slate-800">
           Error retrieving your project
@@ -102,7 +102,7 @@ export default function ProjectPanel({ projectId }: Props) {
 
   if (!project) {
     return (
-      <div className="min-h-[calc(100dvh-52px-28px)] max-w-7xl mx-auto side-px py-6 flex flex-col justify-center items-center gap-4 text-center">
+      <div className="min-h-[calc(100dvh-52px-28px)] max-w-[1440px] mx-auto side-px py-6 flex flex-col justify-center items-center gap-4 text-center">
         <AlertCircle size={40} className="text-slate-800" />
         <p className="text-lg font-semibold text-slate-800">
           Project not available.
@@ -113,7 +113,7 @@ export default function ProjectPanel({ projectId }: Props) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto side-px py-6 space-y-4">
+    <div className="max-w-[1440px] mx-auto side-px py-6 space-y-4">
       <ProjectHeading
         projectName={project?.name}
         onUpdateHeading={updateProjectHeading}
@@ -122,25 +122,55 @@ export default function ProjectPanel({ projectId }: Props) {
         description={project?.description}
         onUpdateDescription={updateProjectDescription}
       />
-      <div className="mx-2 p-3 bg-slate-50 flex items-center gap-4 border border-slate-200 rounded-md">
-        {project.user.name && (
+      <div className="mx-2 p-3 max-w-sm bg-slate-100 flex items-center gap-4 border border-slate-200 rounded-md">
+        {project.owner.name && (
           <div className="h-10 aspect-square text-lg text-slate-100 bg-slate-800 rounded-full flex justify-center items-center">
-            {project.user.name.charAt(0)}
+            {project.owner.name.charAt(0)}
           </div>
         )}
         <div>
-          <p>{project.user.name}</p>
+          <p>{project.owner.name}</p>
           <p className="text-sm text-slate-400">Project Owner</p>
         </div>
       </div>
+      <div className="mx-2 p-4 bg-slate-100 border border-slate-200 rounded-md">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold text-slate-800">
+            Tasks{" "}
+            <span className="text-sm text-slate-400 font-normal">
+              ({project.tasks.length})
+            </span>
+          </h2>
+          <button className="primary-button text-sm">Add Task</button>
+        </div>
+        {project.tasks.length === 0 ? (
+          <div className="h-52 text-slate-400 flex justify-center items-center">
+            <p className="text-sm">No tasks in this project yet.</p>
+          </div>
+        ) : (
+          <ul className="space-y-2">
+            {project.tasks.map((task) => (
+              <li
+                key={task.id}
+                className="p-3 bg-white hover:bg-slate-50 flex items-center justify-between border border-slate-200 rounded-md transition"
+              >
+                <p className="text-slate-700 text-sm">{task.description}</p>
+                <span className="text-xs px-2 py-1 rounded-md bg-yellow-100 text-yellow-700">
+                  {task.status}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       <div className="px-2 text-sm text-slate-400 space-y-1">
         <p>
-          <span className="font-medium">Last updated:</span>{" "}
+          <span className="font-medium">Last updated</span>{" "}
           {timeAgo(project.updatedAt)}
         </p>
         <p>
           <span className="font-medium">Created on:</span>{" "}
-          {new Date(project.createdAt).toLocaleString()}
+          {new Date(project.createdAt).toLocaleDateString()}
         </p>
       </div>
     </div>

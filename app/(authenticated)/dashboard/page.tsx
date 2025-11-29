@@ -4,7 +4,7 @@ import { Plus } from "@deemlol/next-icons";
 
 export default async function DashboardPage() {
   return (
-    <section className="max-w-7xl mx-auto side-px py-6">
+    <section className="max-w-[1440px] mx-auto side-px py-6">
       <div className="mb-6 flex justify-between items-center gap-4">
         <h1 className="text-2xl sm:text-3xl font-semibold">Your Projects</h1>
         <Link

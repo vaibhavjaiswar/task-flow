@@ -104,7 +104,7 @@ export default function ProjectList() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
       {projects.map(({ id, name, description, updatedAt }) => {
         // const { done, inprogress, todo, total } = tasks;
         return (
@@ -148,7 +148,7 @@ export default function ProjectList() {
               </p>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 px-6 py-2 text-xs text-slate-400 font-light border-t border-slate-200">
+            <div className="absolute bottom-0 left-0 right-0 px-6 py-2 text-xs text-slate-400 font-light bg-slate-100 border-t border-slate-200">
               <p>
                 Last updated{" "}
                 <span className="text-slate-500">{timeAgo(updatedAt)}</span>

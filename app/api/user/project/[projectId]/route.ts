@@ -42,6 +42,19 @@ export async function GET(
             name: true,
           },
         },
+        tasks: {
+          select: {
+            createdAt: true,
+            description: true,
+            dueDate: true,
+            id: true,
+            priority: true,
+            projectId: true,
+            status: true,
+            title: true,
+            updatedAt: true,
+          },
+        },
       },
     });
 
@@ -52,7 +65,12 @@ export async function GET(
       );
     }
 
-    const responseData = { project };
+    const responseData: ProjectResponseType = {
+      project: {
+        ...project,
+        owner: project.user,
+      },
+    };
 
     return NextResponse.json(
       {
@@ -141,14 +159,34 @@ export async function PATCH(
             name: true,
           },
         },
+        tasks: {
+          select: {
+            createdAt: true,
+            description: true,
+            dueDate: true,
+            id: true,
+            priority: true,
+            projectId: true,
+            status: true,
+            title: true,
+            updatedAt: true,
+          },
+        },
       },
     });
+
+    const responseData: ProjectResponseType = {
+      project: {
+        ...updatedProject,
+        owner: updatedProject.user,
+      },
+    };
 
     return NextResponse.json(
       {
         ok: true,
         message: "Project updated successfully.",
-        data: { project: updatedProject },
+        data: responseData,
       },
       { status: 200 }
     );
