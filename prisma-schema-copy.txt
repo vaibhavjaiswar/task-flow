@@ -47,7 +47,7 @@ model Task {
   id          String        @id @default(cuid())
   name        String
   description String?
-  status      TaskStatus    @default(PENDING)
+  status      TaskStatus    @default(TODO)
   priority    TaskPriority  @default(MEDIUM)
   dueDate     DateTime?
   createdAt   DateTime      @default(now())
@@ -63,9 +63,11 @@ model Task {
 }
 
 enum TaskStatus {
-  PENDING
+  TODO
   IN_PROGRESS
-  COMPLETED
+  DONE
+  BLOCKED
+  NEED_INFO
   CANCELLED
 }
 
