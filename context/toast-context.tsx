@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 import Toast from "@/components/toast";
 import { ToastType } from "@/types/ui";
 import { generateRandomString } from "@/utils";
@@ -21,24 +27,25 @@ const ToastContext = createContext<ToastContextType>({
 export default function ToastProvider({ children }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastType[]>([]);
 
-  const showToast = ({ message, type = "neutral" }: Omit<ToastType, "id">) => {
-    const toastId = `(${(
-      toasts.length + 1
-    ).toString()})${generateRandomString()}`;
-    const newToast: ToastType = {
-      id: toastId,
-      message,
-      type,
-    };
-
-    setToasts((toasts) => [...toasts, newToast]);
-
-    setTimeout(() => removeToast(toastId), 5000);
-  };
-
-  const removeToast = (id: string) => {
+  const removeToast = useCallback((id: string) => {
     setToasts((toasts) => toasts.filter((toast) => toast.id !== id));
-  };
+  }, []);
+
+  const showToast = useCallback(
+    ({ message, type = "neutral" }: Omit<ToastType, "id">) => {
+      const toastId = generateRandomString();
+      const newToast: ToastType = {
+        id: toastId,
+        message,
+        type,
+      };
+
+      setToasts((toasts) => [...toasts, newToast]);
+
+      setTimeout(() => removeToast(toastId), 5000);
+    },
+    [removeToast]
+  );
 
   return (
     <ToastContext.Provider value={{ showToast }}>

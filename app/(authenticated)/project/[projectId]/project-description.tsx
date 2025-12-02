@@ -10,7 +10,7 @@ interface Props {
   ) => Promise<ServerResponseType<ProjectResponseType>>;
 }
 
-export default function description({
+export default function ProjectDescription({
   description,
   onUpdateDescription,
 }: Props) {

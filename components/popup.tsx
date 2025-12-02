@@ -70,7 +70,7 @@ export function PopupTrigger({ children, ...rest }: PopupTriggerProps) {
 
 interface PopupContentProps extends React.HTMLAttributes<HTMLDivElement> {
   offset?: number;
-  stickTo?: "left" | "right";
+  stickTo?: "left" | "right" | "stretch";
   children: React.ReactNode;
 }
 
@@ -85,7 +85,7 @@ let portalElementCurrent: HTMLElement | null = null;
 export function PopupContent({
   children,
   offset = 0,
-  stickTo = "left",
+  stickTo = "stretch",
   ...rest
 }: PopupContentProps) {
   const [position, setPosition] = useState<PopupContentPositionType>();
@@ -124,8 +124,10 @@ export function PopupContent({
       const { bottom, left, right } =
         popupTriggerRef.current.getBoundingClientRect();
       setPosition({ bottom, left, right });
+    } else {
+      console.log("Popup trigger not avaiable & window width", width);
     }
-  }, [popupTriggerRef]);
+  }, [popupTriggerRef, width]);
 
   if (!portalElementCurrent) return null;
 
@@ -135,12 +137,14 @@ export function PopupContent({
       className={
         `absolute top-0 left-0 ${
           open ? "opacity-100 visible" : "opacity-0 invisible"
-        } transition-opacity` + className
+        } transition-opacity shadow-lg ` + className
       }
       style={{
         top: positionTop,
-        left: stickTo === "left" ? positionLeft : "auto",
-        right: stickTo === "right" ? positionRight : "auto",
+        left:
+          stickTo === "left" || stickTo === "stretch" ? positionLeft : "auto",
+        right:
+          stickTo === "right" || stickTo === "stretch" ? positionRight : "auto",
         ...style,
       }}
       {...restCopy}

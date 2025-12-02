@@ -9,7 +9,7 @@ import {
 } from "@/types/api-response";
 
 export async function GET(
-  req: Request
+  // req: Request
 ): Promise<NextResponse<ServerResponseType<UserProjectsResponseType>>> {
   try {
     const cookieStore = await cookies();

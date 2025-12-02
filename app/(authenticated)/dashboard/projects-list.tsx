@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchUserProjects } from "@/apis";
 import { Project } from "@/prisma/generated/client";
 import { timeAgo } from "@/utils";
@@ -14,7 +14,7 @@ export default function ProjectList() {
 
   const { showToast } = useToast();
 
-  const fetchProjectList = async () => {
+  const fetchProjectList = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetchUserProjects();
@@ -46,11 +46,11 @@ export default function ProjectList() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     fetchProjectList();
-  }, []);
+  }, [fetchProjectList]);
 
   if (isLoading) {
     return (

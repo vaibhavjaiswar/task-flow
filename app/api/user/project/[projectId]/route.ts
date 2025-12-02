@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
-import { getTokenPayloadByVerifying } from "@/utils/jwt";
 import prisma from "@/lib/prisma";
+import { getTokenPayloadByVerifying } from "@/utils/jwt";
 import { ServerError } from "@/utils/server-error";
+import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
 
 export async function GET(
   request: Request,
@@ -48,11 +48,12 @@ export async function GET(
             description: true,
             dueDate: true,
             id: true,
+            name: true,
             priority: true,
             projectId: true,
             status: true,
-            title: true,
             updatedAt: true,
+            userId: true,
           },
         },
       },
@@ -165,11 +166,12 @@ export async function PATCH(
             description: true,
             dueDate: true,
             id: true,
+            name: true,
             priority: true,
             projectId: true,
             status: true,
-            title: true,
             updatedAt: true,
+            userId: true,
           },
         },
       },

@@ -6,7 +6,7 @@ import { ServerError } from "@/utils/server-error";
 import { getTokenPayloadByVerifying } from "@/utils/jwt";
 
 export async function GET(
-  req: Request
+  // req: Request
 ): Promise<NextResponse<ServerResponseType<UserResponseType>>> {
   try {
     const cookieStore = await cookies();
