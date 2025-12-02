@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { TaskPriority, TaskStatus } from "@/prisma/generated/enums";
 
 dayjs.extend(relativeTime);
 
@@ -14,3 +15,18 @@ export function generateRandomString() {
 export function timeAgo(date: string | Date) {
   return dayjs(date).fromNow();
 }
+
+export const TaskStatusLabel: Record<TaskStatus, string> = {
+  TODO: "To-Do",
+  IN_PROGRESS: "In Progress",
+  DONE: "Done",
+  BLOCKED: "Blocked",
+  NEED_INFO: "Need Info",
+  CANCELLED: "Cancelled",
+};
+
+export const TaskPrirotyLabel: Record<TaskPriority, string> = {
+  LOW: "Low",
+  MEDIUM: "Medium",
+  HIGH: "High",
+};

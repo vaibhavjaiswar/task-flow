@@ -43,3 +43,7 @@ export type ProjectWithDetails = Project & {
 export interface ProjectResponseType {
   project: ProjectWithDetails;
 }
+
+export interface TaskResponseType {
+  task: Task;
+}

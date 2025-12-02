@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchUserProject, updateUserProject } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
@@ -9,6 +9,7 @@ import ProjectHeading from "./project-heading";
 import ProjectDescription from "./project-description";
 import { ProjectWithDetails } from "@/types/api-response";
 import { timeAgo } from "@/utils";
+import AddNewTaskDialog from "./add-new-task";
 
 interface Props {
   projectId: string;
@@ -18,42 +19,47 @@ export default function ProjectPanel({ projectId }: Props) {
   const [project, setProject] = useState<ProjectWithDetails | null>(null);
   const [isFetchingProject, setIsFetchingProject] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showAddNewTaskDialog, setShowAddNewTaskDialog] = useState(false);
 
   const { showToast } = useToast();
 
-  const fetchUserProjectCall = async () => {
-    try {
-      setIsFetchingProject(true);
-      const response = await fetchUserProject(projectId);
-      const { ok, message } = response;
+  const fetchUserProjectCall = useCallback(
+    async (options?: { shouldUpdateInBackground?: boolean }) => {
+      const showLoader = !options?.shouldUpdateInBackground;
+      try {
+        showLoader && setIsFetchingProject(true);
+        const response = await fetchUserProject(projectId);
+        const { ok, message } = response;
 
-      if (!ok) {
-        console.error(
-          "Error occured while fetching user's projects",
-          response.error
-        );
-        setError(message);
+        if (!ok) {
+          console.error(
+            "Error occured while fetching user's projects",
+            response.error
+          );
+          setError(message);
+          showLoader && setIsFetchingProject(false);
+          return;
+        }
+
+        setProject(response.data?.project ?? null);
+      } catch (error) {
+        console.error(error);
+
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Error occured while registering.";
+
+        showToast({
+          type: "error",
+          message: errorMessage,
+        });
+      } finally {
         setIsFetchingProject(false);
-        return;
       }
-
-      setProject(response.data?.project ?? null);
-    } catch (error) {
-      console.error(error);
-
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Error occured while registering.";
-
-      showToast({
-        type: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setIsFetchingProject(false);
-    }
-  };
+    },
+    [projectId, showToast]
+  );
 
   const updateProjectHeading = async (projectName: string) => {
     const response = await updateUserProject(projectId, { projectName });
@@ -75,7 +81,7 @@ export default function ProjectPanel({ projectId }: Props) {
 
   useEffect(() => {
     fetchUserProjectCall();
-  }, []);
+  }, [fetchUserProjectCall]);
 
   if (isFetchingProject) {
     return (
@@ -141,7 +147,12 @@ export default function ProjectPanel({ projectId }: Props) {
               ({project.tasks.length})
             </span>
           </h2>
-          <button className="primary-button text-sm">Add Task</button>
+          <button
+            className="primary-button text-sm"
+            onClick={() => setShowAddNewTaskDialog(true)}
+          >
+            Add Task
+          </button>
         </div>
         {project.tasks.length === 0 ? (
           <div className="h-52 text-slate-400 flex justify-center items-center">
@@ -154,7 +165,7 @@ export default function ProjectPanel({ projectId }: Props) {
                 key={task.id}
                 className="p-3 bg-white hover:bg-slate-50 flex items-center justify-between border border-slate-200 rounded-md transition"
               >
-                <p className="text-slate-700 text-sm">{task.description}</p>
+                <p className="text-slate-700 text-sm">{task.name}</p>
                 <span className="text-xs px-2 py-1 rounded-md bg-yellow-100 text-yellow-700">
                   {task.status}
                 </span>
@@ -173,6 +184,14 @@ export default function ProjectPanel({ projectId }: Props) {
           {new Date(project.createdAt).toLocaleDateString()}
         </p>
       </div>
+      <AddNewTaskDialog
+        projectId={project.id}
+        open={showAddNewTaskDialog}
+        setOpen={setShowAddNewTaskDialog}
+        onSuccess={() =>
+          fetchUserProjectCall({ shouldUpdateInBackground: true })
+        }
+      />
     </div>
   );
 }

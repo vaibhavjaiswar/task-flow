@@ -8,6 +8,14 @@ input {
   @apply px-2 py-1 bg-slate-100 text-slate-900 border border-slate-200 rounded;
 }
 
+select {
+  @apply p-2 bg-slate-100 text-slate-900 border border-slate-200 rounded;
+}
+
+option {
+  @apply bg-slate-100 text-slate-900;
+}
+
 textarea {
   @apply px-2 py-1 bg-slate-100 text-slate-900 border border-slate-200 rounded;
 }

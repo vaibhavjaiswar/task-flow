@@ -1,6 +1,7 @@
 import {
   LoginFormInputs,
   NewProjectFormInputs,
+  NewTaskFormInputs,
   RegisterFormInputs,
 } from "@/types";
 import {
@@ -114,6 +115,24 @@ export async function updateUserProject(
       description: projectDescription,
     }),
   });
+
+  const data: ServerResponseType<ProjectResponseType> = await response.json();
+
+  return data;
+}
+
+export async function createNewTaskInProject(
+  projectId: string,
+  task: NewTaskFormInputs
+) {
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/task`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(task),
+    }
+  );
 
   const data: ServerResponseType<ProjectResponseType> = await response.json();
 
