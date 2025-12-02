@@ -32,7 +32,7 @@ export default function Dialog({
 
   return createPortal(
     <div
-      className={`z-30 fixed top-0 left-0 w-dvw h-dvh bg-slate-800/30 flex justify-center items-center ${
+      className={`fixed top-0 left-0 w-dvw h-dvh bg-slate-800/30 flex justify-center items-center ${
         open ? "opacity-100" : "opacity-0"
       } ${isVisible ? "visible" : "invisible"} transition-opacity`}
       onClick={onBackdropClick}
@@ -51,7 +51,7 @@ export default function Dialog({
         {children}
       </div>
     </div>,
-    document.body
+    document.getElementById("dialog-container") ?? document.body
   );
 }
 

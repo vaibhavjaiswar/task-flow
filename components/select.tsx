@@ -43,7 +43,7 @@ export default function Select<T extends string | number>({
       <PopupContent
         stickTo="stretch"
         offset={6}
-        className="z-10 max-h-96 bg-white border border-slate-200 rounded-md overflow-auto"
+        className="max-h-96 bg-white border border-slate-200 rounded-md overflow-auto"
       >
         {options.map(([value, label]) => (
           <div

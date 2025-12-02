@@ -35,7 +35,7 @@ export default async function DashboardLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.className} antialiased w-dvw h-dvh max-h-dvh max-w-dvw text-slate-900 bg-slate-100`}
+        className={`${inter.className} antialiased min-w-dvw min-h-dvh text-slate-900 bg-slate-100`}
       >
         <ToastProvider>
           <NavBar />
@@ -45,6 +45,8 @@ export default async function DashboardLayout({
               &copy; Designed & developed by Vaibhav Jaiswar
             </p>
           </footer>
+          <div id="dialog-container"></div>
+          <div id="popup-container"></div>
         </ToastProvider>
       </body>
     </html>

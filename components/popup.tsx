@@ -1,11 +1,9 @@
 "use client";
 
-import { useWindowWidth } from "@/hooks/use-width";
 import React, {
   createContext,
   useContext,
   useEffect,
-  useLayoutEffect,
   useRef,
   useState,
 } from "react";
@@ -49,8 +47,10 @@ export function Popup({ children, open, setOpen }: PopupProps) {
   );
 }
 
-interface PopupTriggerProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
+interface PopupTriggerProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onClick"
+> {
   children: React.ReactNode;
 }
 
@@ -75,9 +75,10 @@ interface PopupContentProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 interface PopupContentPositionType {
-  bottom: number;
-  left: number;
-  right: number;
+  left: number | string;
+  right: number | string;
+  top: number | string;
+  width: number | string;
 }
 
 let portalElementCurrent: HTMLElement | null = null;
@@ -88,20 +89,22 @@ export function PopupContent({
   stickTo = "stretch",
   ...rest
 }: PopupContentProps) {
-  const [position, setPosition] = useState<PopupContentPositionType>();
+  const [position, setPosition] = useState<PopupContentPositionType>({
+    left: "auto",
+    right: "auto",
+    top: "auto",
+    width: "auto",
+  });
   const popupContentRef = useRef<HTMLDivElement | null>(null);
   const { open, popupTriggerRef, setOpen } = usePopupContext();
-  const width = useWindowWidth();
 
   const { className, style, ...restCopy } = rest;
-  const positionTop = position ? position.bottom + offset + "px" : "auto";
-  const positionLeft = position ? position.left + "px" : "auto";
-  const positionRight = position ? width - position.right + "px" : "auto";
 
   useEffect(() => {
-    portalElementCurrent = document.body;
+    portalElementCurrent = document.getElementById("popup-container");
   }, []);
 
+  // closes popup if clicked outside popup content
   useEffect(() => {
     const handleClick = (event: MouseEvent) => {
       const contentRef = popupContentRef.current;
@@ -119,15 +122,52 @@ export function PopupContent({
     };
   }, [open, popupTriggerRef, setOpen]);
 
-  useLayoutEffect(() => {
+  // calculates content position
+  useEffect(() => {
+    const update = () => {
+      if (!popupTriggerRef.current || !popupContentRef.current) return null;
+
+      const triggerDOMRect = popupTriggerRef.current.getBoundingClientRect();
+      const contentDOMRect = popupContentRef.current.getBoundingClientRect();
+
+      const triggerBottom = triggerDOMRect.bottom;
+      const triggerTop = triggerDOMRect.top;
+      const triggerRight = triggerDOMRect.right;
+      const triggerLeft = triggerDOMRect.left;
+      const contentHeight = contentDOMRect?.height ?? 0;
+      const isTouchingBottom =
+        window.innerHeight <= triggerBottom + contentHeight + 20;
+
+      const position = {
+        left:
+          stickTo === "left" || stickTo === "stretch" ? triggerLeft : "auto",
+        right: stickTo === "right" ? window.innerWidth - triggerRight : "auto",
+        top: isTouchingBottom
+          ? triggerTop - contentHeight - offset
+          : triggerBottom + offset,
+        width: stickTo === "stretch" ? triggerDOMRect.width : "auto",
+      };
+      setPosition(position);
+    };
+
+    // scroll anywhere
+    window.addEventListener("scroll", update, true);
+
+    // window resize
+    window.addEventListener("resize", update);
+
+    // layout changes
+    const ro = new ResizeObserver(update);
     if (popupTriggerRef.current) {
-      const { bottom, left, right } =
-        popupTriggerRef.current.getBoundingClientRect();
-      setPosition({ bottom, left, right });
-    } else {
-      console.log("Popup trigger not avaiable & window width", width);
+      ro.observe(popupTriggerRef.current);
     }
-  }, [popupTriggerRef, width]);
+
+    return () => {
+      window.removeEventListener("scroll", update, true);
+      window.removeEventListener("resize", update);
+      ro.disconnect();
+    };
+  }, [popupTriggerRef.current]);
 
   if (!portalElementCurrent) return null;
 
@@ -135,16 +175,15 @@ export function PopupContent({
     <div
       ref={popupContentRef}
       className={
-        `absolute top-0 left-0 ${
+        `fixed top-0 left-0 ${
           open ? "opacity-100 visible" : "opacity-0 invisible"
         } transition-opacity shadow-lg ` + className
       }
       style={{
-        top: positionTop,
-        left:
-          stickTo === "left" || stickTo === "stretch" ? positionLeft : "auto",
-        right:
-          stickTo === "right" || stickTo === "stretch" ? positionRight : "auto",
+        left: position.left,
+        right: position.right,
+        width: position.width,
+        top: position.top,
         ...style,
       }}
       {...restCopy}
