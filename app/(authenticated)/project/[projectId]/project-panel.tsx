@@ -48,7 +48,7 @@ export default function ProjectPanel({ projectId }: Props) {
         const errorMessage =
           error instanceof Error
             ? error.message
-            : "Error occured while registering.";
+            : "Error occured while fetching project.";
 
         showToast({
           type: "error",
@@ -141,7 +141,7 @@ export default function ProjectPanel({ projectId }: Props) {
       </div>
       <div className="mx-2 p-4 bg-slate-100 border border-slate-200 rounded-md">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-slate-800">
+          <h2 className="text-lg text-slate-800">
             Tasks{" "}
             <span className="text-sm text-slate-400 font-normal">
               ({project.tasks.length})
@@ -159,17 +159,20 @@ export default function ProjectPanel({ projectId }: Props) {
             <p className="text-sm">No tasks in this project yet.</p>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <ul className="space-y-1">
             {project.tasks.map((task) => (
-              <li
+              <Link
                 key={task.id}
-                className="p-3 bg-white hover:bg-slate-50 flex items-center justify-between border border-slate-200 rounded-md transition"
+                href={`/task/${task.id}`}
+                className="block no-underline!"
               >
-                <p className="text-slate-700 text-sm">{task.name}</p>
-                <span className="text-xs px-2 py-1 rounded-md bg-yellow-100 text-yellow-700">
-                  {task.status}
-                </span>
-              </li>
+                <li className="px-3 py-2 bg-white hover:bg-slate-50 flex items-center justify-between border border-slate-200 rounded-md transition">
+                  <p className="text-slate-700 ">{task.name}</p>
+                  <span className="text-xs px-2 py-1 bg-slate-200 text-slate-700 border border-slate-300 rounded-md">
+                    {task.status}
+                  </span>
+                </li>
+              </Link>
             ))}
           </ul>
         )}

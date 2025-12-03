@@ -40,7 +40,7 @@ export default function ProjectDescription({
       const errorMessage =
         error instanceof Error
           ? error.message
-          : "Error occured while updating project name.";
+          : "Error occured while updating project description.";
 
       showToast({
         type: "error",

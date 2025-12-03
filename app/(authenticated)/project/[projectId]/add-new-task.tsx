@@ -152,18 +152,9 @@ export default function AddNewTaskDialog({
           <span className="text-sm mb-1">Due Date</span>
           <input
             type="date"
+            min={new Date().toISOString().split("T")[0]}
             className="block w-full"
-            {...register("dueDate", {
-              validate: {
-                isValidDate: (value) => {
-                  const today = new Date(); // Get today's date in 'YYYY-MM-DD' format
-                  if (value && value < today) {
-                    return "Due date must be today or in the future";
-                  }
-                  return true;
-                },
-              },
-            })}
+            {...register("dueDate")}
           />
           {errors.dueDate && (
             <p className="text-xs text-red-500 mt-1">

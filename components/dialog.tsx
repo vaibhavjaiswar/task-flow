@@ -39,7 +39,7 @@ export default function Dialog({
     >
       <div
         className={
-          "max-w-4xl w-dvw h-dvh sm:w-auto sm:h-auto m-0 sm:m-6 md:m-8 lg:m-12 p-4 sm:p-6 md:p-8 text-slate-800 bg-slate-100 border border-slate-200 sm:rounded-lg shadow-xl " +
+          "max-w-4xl w-dvw h-dvh max-h-full sm:w-auto sm:h-auto m-0 sm:m-6 md:m-8 lg:m-12 p-4 sm:p-6 md:p-8 text-slate-800 bg-slate-100 border border-slate-200 sm:rounded-lg shadow-xl overflow-y-auto " +
           className
         }
         onClick={(e) => {
