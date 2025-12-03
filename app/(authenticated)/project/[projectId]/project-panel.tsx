@@ -94,7 +94,7 @@ export default function ProjectPanel({ projectId }: Props) {
 
   if (error) {
     return (
-      <div className="min-h-[calc(100dvh-52px-28px)] max-w-[1440px] mx-auto side-px py-6 flex justify-center items-center gap-2">
+      <div className="min-h-[calc(100dvh-52px-28px)] max-w-[1440px] mx-auto side-px py-6 flex flex-col justify-center items-center gap-2">
         <AlertCircle size={40} className="text-slate-800" />
         <h2 className="text-lg font-semibold text-slate-800">
           Error retrieving your project
