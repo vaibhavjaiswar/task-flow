@@ -3,12 +3,12 @@ import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { getTokenPayloadByVerifying } from "@/utils/jwt";
 import { ServerError } from "@/utils/server-error";
-import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
+import { TaskResponseType, ServerResponseType } from "@/types/api-response";
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ projectId: string }> }
-): Promise<NextResponse<ServerResponseType<ProjectResponseType>>> {
+  { params }: { params: Promise<{ taskId: string }> }
+): Promise<NextResponse<ServerResponseType<TaskResponseType>>> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -30,10 +30,10 @@ export async function GET(
     }
 
     const { userId } = payload;
-    const { projectId } = await params;
+    const { taskId } = await params;
 
-    const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
       include: {
         user: {
           select: {
@@ -42,52 +42,33 @@ export async function GET(
             name: true,
           },
         },
-        tasks: {
-          select: {
-            createdAt: true,
-            description: true,
-            dueDate: true,
-            id: true,
-            name: true,
-            priority: true,
-            projectId: true,
-            status: true,
-            updatedAt: true,
-            userId: true,
-          },
-        },
       },
     });
 
-    if (!project) {
+    if (!task) {
       return NextResponse.json(
-        { ok: false, message: "Project not found." },
+        { ok: false, message: "Task not found." },
         { status: 404 }
       );
     }
 
-    const responseData: ProjectResponseType = {
-      project: {
-        ...project,
-        owner: project.user,
-      },
-    };
+    const responseData: TaskResponseType = { task };
 
     return NextResponse.json(
       {
         ok: true,
-        message: "Project fetched successfully.",
+        message: "Task fetched successfully.",
         data: responseData,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Fetch project error:", error);
+    console.error("Fetch task error:", error);
 
     const errorMessage =
       error instanceof ServerError
         ? error.message
-        : "An error occurred while fetching the project.";
+        : "An error occurred while fetching the task.";
     const errorStatusCode =
       error instanceof ServerError ? error.statusCode : 500;
 
@@ -100,8 +81,8 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ projectId: string }> }
-): Promise<NextResponse<ServerResponseType<ProjectResponseType>>> {
+  { params }: { params: Promise<{ taskId: string }> }
+): Promise<NextResponse<ServerResponseType<TaskResponseType>>> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -123,7 +104,7 @@ export async function PATCH(
     }
 
     const { userId } = payload;
-    const { projectId } = await params;
+    const { taskId } = await params;
 
     const body = await request.json();
     const { name, description } = body;
@@ -135,70 +116,44 @@ export async function PATCH(
       );
     }
 
-    const existingProject = await prisma.project.findFirst({
-      where: { id: projectId, userId },
+    const existingTask = await prisma.task.findFirst({
+      where: { id: taskId, userId },
     });
 
-    if (!existingProject) {
+    if (!existingTask) {
       return NextResponse.json(
         { ok: false, message: "Project not found." },
         { status: 404 }
       );
     }
 
-    const updatedProject = await prisma.project.update({
-      where: { id: projectId },
+    const updatedTask = await prisma.task.update({
+      where: { id: taskId },
       data: {
-        name: name?.trim() ?? existingProject.name,
-        description: description ?? existingProject.description,
-      },
-      include: {
-        user: {
-          select: {
-            createdAt: true,
-            email: true,
-            name: true,
-          },
-        },
-        tasks: {
-          select: {
-            createdAt: true,
-            description: true,
-            dueDate: true,
-            id: true,
-            name: true,
-            priority: true,
-            projectId: true,
-            status: true,
-            updatedAt: true,
-            userId: true,
-          },
-        },
+        name: name?.trim() ?? existingTask.name,
+        description: description ?? existingTask.description,
       },
     });
 
-    const responseData: ProjectResponseType = {
-      project: {
-        ...updatedProject,
-        owner: updatedProject.user,
-      },
+    const responseData: TaskResponseType = {
+      task: updatedTask,
     };
 
     return NextResponse.json(
       {
         ok: true,
-        message: "Project updated successfully.",
+        message: "Task updated successfully.",
         data: responseData,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Update project error:", error);
+    console.error("Update task error:", error);
 
     const errorMessage =
       error instanceof ServerError
         ? error.message
-        : "An error occurred while updating the project.";
+        : "An error occurred while updating the task.";
 
     const errorStatusCode =
       error instanceof ServerError ? error.statusCode : 500;

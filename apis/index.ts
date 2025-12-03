@@ -9,6 +9,7 @@ import {
   ProjectResponseType,
   RegisterResponseType,
   ServerResponseType,
+  TaskResponseType,
   UserProjectsResponseType,
   UserResponseType,
 } from "@/types/api-response";
@@ -135,6 +136,40 @@ export async function createNewTaskInProject(
   );
 
   const data: ServerResponseType<ProjectResponseType> = await response.json();
+
+  return data;
+}
+
+export async function fetchUserTask(taskId: string) {
+  const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const data: ServerResponseType<TaskResponseType> = await response.json();
+
+  return data;
+}
+
+interface updateUserTaskArgsType {
+  taskName?: string;
+  taskDescription?: string;
+}
+
+export async function updateUserTask(
+  taskId: string,
+  { taskName, taskDescription }: updateUserTaskArgsType
+) {
+  const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: taskName,
+      description: taskDescription,
+    }),
+  });
+
+  const data: ServerResponseType<TaskResponseType> = await response.json();
 
   return data;
 }
