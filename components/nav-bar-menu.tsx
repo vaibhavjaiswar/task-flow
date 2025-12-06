@@ -1,16 +1,18 @@
 "use client";
 
-import { logout } from "@/apis";
-import { useToast } from "@/context/toast-context";
-import { LogOut, User } from "@deemlol/next-icons";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { fetchUser, logout } from "@/apis";
+import { useToast } from "@/context/toast-context";
+import { useUserStore } from "@/store/useUserStore";
 import { Popup, PopupContent, PopupTrigger } from "./popup";
+import { LogOut, User } from "@deemlol/next-icons";
 
 export default function NavBarMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const { showToast } = useToast();
+  const { user, clearUser, setUser } = useUserStore();
 
   const handleLogout = async () => {
     const response = await logout();
@@ -23,8 +25,35 @@ export default function NavBarMenu() {
       return;
     }
 
+    clearUser();
     router.push("/login");
   };
+
+  const fetchUserCall = async () => {
+    const response = await fetchUser();
+    if (!response.ok) {
+      showToast({
+        type: "error",
+        message: "Unable to fetch user data. Please login again.",
+      });
+      handleLogout();
+      return;
+    }
+    const user = response.data?.user;
+    if (!user) {
+      showToast({
+        type: "error",
+        message: "Unable to fetch user data. Please login again.",
+      });
+      handleLogout();
+      return;
+    }
+    setUser(user);
+  };
+
+  useEffect(() => {
+    fetchUserCall();
+  }, []);
 
   return (
     <div className="flex items-center gap-2">
@@ -32,7 +61,11 @@ export default function NavBarMenu() {
         <PopupTrigger>
           <div className="p-1 text-slate-100 flex justify-center items-center gap-1 cursor-pointer">
             <User size={20} className="text-slate-100" />
-            <span className="text-sm">{"User Name"}</span>
+            {user ? (
+              <span className="text-sm">{user.name}</span>
+            ) : (
+              <span className="inline-block w-16 h-5 bg-slate-100/20 rounded animate-pulse"></span>
+            )}
           </div>
         </PopupTrigger>
         <PopupContent offset={8} stickTo="right">

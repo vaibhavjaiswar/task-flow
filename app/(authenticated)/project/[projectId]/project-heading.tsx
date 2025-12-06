@@ -56,7 +56,7 @@ export default function ProjectHeading({
   return (
     <div className="relative">
       <h1
-        className="px-2 py-1 text-2xl sm:text-3xl font-semibold cursor-text border border-transparent rounded hover:bg-slate-100 hover:border-slate-200"
+        className="px-2 py-1 text-2xl sm:text-3xl font-semibold cursor-text border border-transparent rounded hover:bg-slate-100 hover:border-slate-200 line-clamp-1"
         onClick={() => {
           setIsEditing(true);
           setTimeout(() => inputRef.current?.focus());
