@@ -10,6 +10,7 @@ import TaskDescription from "./task-description";
 import { TaskPrirotyLabel, TaskStatusLabel, timeAgo } from "@/utils";
 import { Task, TaskPriority, TaskStatus } from "@/prisma/generated/client";
 import Select from "@/components/select";
+import dayjs from "dayjs";
 
 interface Props {
   taskId: string;
@@ -233,7 +234,9 @@ export default function TaskPanel({ taskId }: Props) {
           <div className="min-h-[37.6px] flex items-center">
             <div className="inline-block w-52 font-semibold">Due Date:</div>
             <div className="inline-block grow">
-              {task.dueDate?.toLocaleDateString() ?? (
+              {task.dueDate ? (
+                dayjs(task.dueDate)?.format("DD MMM YYYY")
+              ) : (
                 <span className="text-slate-400">NA</span>
               )}
             </div>
@@ -247,7 +250,7 @@ export default function TaskPanel({ taskId }: Props) {
         </p>
         <p>
           <span className="font-medium">Created on:</span>{" "}
-          {new Date(task.createdAt).toLocaleDateString()}
+          {dayjs(task.createdAt).format("DD MMM YYYY")}
         </p>
       </div>
     </div>

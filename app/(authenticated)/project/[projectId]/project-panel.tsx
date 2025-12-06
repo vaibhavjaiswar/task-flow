@@ -10,6 +10,7 @@ import ProjectDescription from "./project-description";
 import { ProjectWithDetails } from "@/types/api-response";
 import { timeAgo } from "@/utils";
 import AddNewTaskDialog from "./add-new-task";
+import dayjs from "dayjs";
 
 interface Props {
   projectId: string;
@@ -184,7 +185,7 @@ export default function ProjectPanel({ projectId }: Props) {
         </p>
         <p>
           <span className="font-medium">Created on:</span>{" "}
-          {new Date(project.createdAt).toLocaleDateString()}
+          {dayjs(project.createdAt).format("DD MMM YYYY")}
         </p>
       </div>
       <AddNewTaskDialog
