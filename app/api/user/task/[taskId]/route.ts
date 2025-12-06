@@ -29,11 +29,20 @@ export async function GET(
       );
     }
 
-    const { userId } = payload;
+    const { userId, email } = payload;
     const { taskId } = await params;
 
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
+
     const task = await prisma.task.findFirst({
-      where: { id: taskId, userId },
+      where: { id: taskId, creatorId: userId },
       include: {
         user: {
           select: {
@@ -103,13 +112,22 @@ export async function PATCH(
       );
     }
 
-    const { userId } = payload;
+    const { userId, email } = payload;
     const { taskId } = await params;
 
-    const body = await request.json();
-    const { name, description } = body;
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
 
-    if (!name && !description) {
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
+
+    const body = await request.json();
+    const { name, description, status, priority } = body;
+
+    if (!name && !description && !status && !priority) {
       return NextResponse.json(
         { ok: false, message: "Nothing to update." },
         { status: 400 }
@@ -117,7 +135,7 @@ export async function PATCH(
     }
 
     const existingTask = await prisma.task.findFirst({
-      where: { id: taskId, userId },
+      where: { id: taskId, creatorId: userId },
     });
 
     if (!existingTask) {
@@ -132,6 +150,8 @@ export async function PATCH(
       data: {
         name: name?.trim() ?? existingTask.name,
         description: description ?? existingTask.description,
+        status: status ?? existingTask.status,
+        priority: priority ?? existingTask.priority,
       },
     });
 
@@ -161,6 +181,83 @@ export async function PATCH(
     return NextResponse.json(
       { ok: false, message: errorMessage },
       { status: errorStatusCode }
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ taskId: string }> }
+): Promise<NextResponse<ServerResponseType<null>>> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { ok: false, message: "Authentication token missing." },
+        { status: 401 }
+      );
+    }
+
+    const payload = getTokenPayloadByVerifying(token);
+
+    if (!payload) {
+      return NextResponse.json(
+        { ok: false, message: "Authentication token invalid." },
+        { status: 401 }
+      );
+    }
+
+    const { userId, email } = payload;
+    const { taskId } = await params;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
+
+    // Check if the task exists and belongs to the user
+    const existingTask = await prisma.task.findFirst({
+      where: { id: taskId, creatorId: userId },
+    });
+
+    if (!existingTask) {
+      return NextResponse.json(
+        { ok: false, message: "Task not found or you do not have permission." },
+        { status: 404 }
+      );
+    }
+
+    // Delete the task
+    await prisma.task.delete({
+      where: { id: taskId },
+    });
+
+    return NextResponse.json(
+      {
+        ok: true,
+        message: "Task deleted successfully.",
+        data: null,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Delete task error:", error);
+
+    const errorMessage =
+      error instanceof ServerError
+        ? error.message
+        : "An error occurred while deleting the task.";
+    const errorStatus = error instanceof ServerError ? error.statusCode : 500;
+
+    return NextResponse.json(
+      { ok: false, message: errorMessage },
+      { status: errorStatus }
     );
   }
 }

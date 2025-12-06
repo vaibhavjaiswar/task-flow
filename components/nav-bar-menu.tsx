@@ -36,9 +36,9 @@ export default function NavBarMenu() {
           </div>
         </PopupTrigger>
         <PopupContent offset={8} stickTo="right">
-          <div className="min-w-52 text-slate-800 bg-slate-100 border border-slate-300 rounded-md shadow-lg">
+          <div className="min-w-52 border border-slate-300 rounded-md shadow-lg overflow-hidden">
             <div
-              className="px-4 py-2 flex items-center gap-2 hover:bg-slate-200 cursor-pointer"
+              className="px-4 py-2 text-slate-800 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 cursor-pointer"
               onClick={handleLogout}
             >
               <LogOut size={18} />

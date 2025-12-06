@@ -29,7 +29,16 @@ export async function POST(
       );
     }
 
-    const { userId } = payload;
+    const { userId, email } = payload;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
 
     const json = (await request.json()) as NewProjectFormInputs;
 

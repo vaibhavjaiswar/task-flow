@@ -14,6 +14,7 @@ import {
   UserResponseType,
 } from "@/types/api-response";
 import environment from "@/config/env";
+import { TaskPriority, TaskStatus } from "@/prisma/generated/enums";
 
 const SERVER_URL = environment.NEXT_PUBLIC_BASE_URL;
 
@@ -154,11 +155,18 @@ export async function fetchUserTask(taskId: string) {
 interface updateUserTaskArgsType {
   taskName?: string;
   taskDescription?: string;
+  taskStatus?: TaskStatus;
+  taskPriority?: TaskPriority;
 }
 
 export async function updateUserTask(
   taskId: string,
-  { taskName, taskDescription }: updateUserTaskArgsType
+  {
+    taskName,
+    taskDescription,
+    taskStatus,
+    taskPriority,
+  }: updateUserTaskArgsType
 ) {
   const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
     method: "PATCH",
@@ -166,10 +174,22 @@ export async function updateUserTask(
     body: JSON.stringify({
       name: taskName,
       description: taskDescription,
+      status: taskStatus,
+      priority: taskPriority,
     }),
   });
 
   const data: ServerResponseType<TaskResponseType> = await response.json();
+
+  return data;
+}
+
+export async function deleteUserTask(taskId: string) {
+  const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
+    method: "DELETE",
+  });
+
+  const data: ServerResponseType<null> = await response.json();
 
   return data;
 }

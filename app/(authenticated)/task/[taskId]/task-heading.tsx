@@ -1,19 +1,25 @@
 import LoadingButton from "@/components/loading-button";
+import { Popup, PopupContent, PopupTrigger } from "@/components/popup";
 import { useToast } from "@/context/toast-context";
 import { TaskResponseType, ServerResponseType } from "@/types/api-response";
+import { MoreVertical, Trash } from "@deemlol/next-icons";
 import { useRef, useState } from "react";
+import DeleteTaskDialog from "./delete-task";
+import { Task } from "@/prisma/generated/client";
 
 interface Props {
-  taskName: string;
+  task: Task;
   onUpdateHeading: (
     taskName: string
   ) => Promise<ServerResponseType<TaskResponseType>>;
 }
 
-export default function TaskHeading({ taskName, onUpdateHeading }: Props) {
+export default function TaskHeading({ task, onUpdateHeading }: Props) {
   const [isEditing, setIsEditing] = useState(false);
-  const [newName, setNewName] = useState(taskName);
+  const [newName, setNewName] = useState(task.name);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [showOption, setShowOption] = useState(false);
+  const [showDeleteTaskDialog, setShowDeleteTaskDialog] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { showToast } = useToast();
@@ -48,19 +54,21 @@ export default function TaskHeading({ taskName, onUpdateHeading }: Props) {
     }
   };
 
-  const isNameSame = taskName === newName.trim();
+  const isNameSame = task.name === newName.trim();
 
   return (
-    <div className="relative">
-      <h1
-        className="px-2 py-1 text-2xl sm:text-3xl font-semibold cursor-text border border-transparent rounded hover:bg-slate-100 hover:border-slate-200"
-        onClick={() => {
-          setIsEditing(true);
-          setTimeout(() => inputRef.current?.focus());
-        }}
-      >
-        {taskName}
-      </h1>
+    <div className="relative flex items-center gap-2">
+      <div className="grow">
+        <h1
+          className="px-2 py-1 text-2xl sm:text-3xl font-semibold cursor-text border border-transparent rounded hover:bg-slate-100 hover:border-slate-200"
+          onClick={() => {
+            setIsEditing(true);
+            setTimeout(() => inputRef.current?.focus());
+          }}
+        >
+          {task.name}
+        </h1>
+      </div>
       <input
         ref={inputRef}
         type="text"
@@ -87,6 +95,34 @@ export default function TaskHeading({ taskName, onUpdateHeading }: Props) {
           Save
         </LoadingButton>
       )}
+      <Popup open={showOption} setOpen={setShowOption}>
+        <PopupTrigger>
+          <div className="p-2.5 hover:bg-slate-200 rounded cursor-pointer">
+            <MoreVertical size={22} className="text-slate-800" />
+          </div>
+        </PopupTrigger>
+        <PopupContent
+          offset={8}
+          stickTo="right"
+          className="min-w-52 border border-slate-300 rounded-md shadow-lg overflow-hidden"
+        >
+          <div
+            className="px-4 py-2 text-red-700 bg-slate-100 hover:bg-red-100 flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setShowDeleteTaskDialog(true);
+              setShowOption(false);
+            }}
+          >
+            <Trash size={18} />
+            Delete task
+          </div>
+        </PopupContent>
+      </Popup>
+      <DeleteTaskDialog
+        open={showDeleteTaskDialog}
+        task={task}
+        setOpen={setShowDeleteTaskDialog}
+      />
     </div>
   );
 }

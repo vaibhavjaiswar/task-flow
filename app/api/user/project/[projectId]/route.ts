@@ -29,8 +29,17 @@ export async function GET(
       );
     }
 
-    const { userId } = payload;
+    const { userId, email } = payload;
     const { projectId } = await params;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
 
     const project = await prisma.project.findFirst({
       where: { id: projectId, userId },
@@ -53,7 +62,7 @@ export async function GET(
             projectId: true,
             status: true,
             updatedAt: true,
-            userId: true,
+            creatorId: true,
           },
         },
       },
@@ -122,8 +131,17 @@ export async function PATCH(
       );
     }
 
-    const { userId } = payload;
+    const { email, userId } = payload;
     const { projectId } = await params;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
 
     const body = await request.json();
     const { name, description } = body;
@@ -171,7 +189,7 @@ export async function PATCH(
             projectId: true,
             status: true,
             updatedAt: true,
-            userId: true,
+            creatorId: true,
           },
         },
       },

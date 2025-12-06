@@ -8,9 +8,10 @@ import {
   UserProjectsResponseType,
 } from "@/types/api-response";
 
-export async function GET(
+export async function GET(): Promise<
   // req: Request
-): Promise<NextResponse<ServerResponseType<UserProjectsResponseType>>> {
+  NextResponse<ServerResponseType<UserProjectsResponseType>>
+> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -31,7 +32,16 @@ export async function GET(
       );
     }
 
-    const { userId } = payload;
+    const { email, userId } = payload;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
 
     const projects = await prisma.project.findMany({ where: { userId } });
 

@@ -5,9 +5,10 @@ import { ServerResponseType, UserResponseType } from "@/types/api-response";
 import { ServerError } from "@/utils/server-error";
 import { getTokenPayloadByVerifying } from "@/utils/jwt";
 
-export async function GET(
+export async function GET(): Promise<
   // req: Request
-): Promise<NextResponse<ServerResponseType<UserResponseType>>> {
+  NextResponse<ServerResponseType<UserResponseType>>
+> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -34,7 +35,7 @@ export async function GET(
 
     if (!user) {
       return NextResponse.json(
-        { ok: false, message: `User with email ${email} is not registered.` },
+        { ok: false, message: "User not found." },
         { status: 404 }
       );
     }

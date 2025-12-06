@@ -7,8 +7,9 @@ import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
 import TaskHeading from "./task-heading";
 import TaskDescription from "./task-description";
-import { timeAgo } from "@/utils";
-import { Task } from "@/prisma/generated/client";
+import { TaskPrirotyLabel, TaskStatusLabel, timeAgo } from "@/utils";
+import { Task, TaskPriority, TaskStatus } from "@/prisma/generated/client";
+import Select from "@/components/select";
 
 interface Props {
   taskId: string;
@@ -18,6 +19,8 @@ export default function TaskPanel({ taskId }: Props) {
   const [task, setTask] = useState<Task | null>(null);
   const [isFetchingTask, setIsFetchingTask] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [priority, setPriority] = useState<TaskPriority>();
+  const [status, setStatus] = useState<TaskStatus>();
 
   const { showToast } = useToast();
 
@@ -40,6 +43,8 @@ export default function TaskPanel({ taskId }: Props) {
         }
 
         setTask(response.data?.task ?? null);
+        setPriority(response.data?.task.priority);
+        setStatus(response.data?.task.status);
       } catch (error) {
         console.error(error);
 
@@ -77,9 +82,82 @@ export default function TaskPanel({ taskId }: Props) {
     return response;
   };
 
+  const handlePriorityChange = async (taskPriority: TaskPriority) => {
+    try {
+      console.log("Change priority to", taskPriority);
+      setPriority(taskPriority);
+      const response = await updateUserTask(taskId, { taskPriority });
+      if (response.ok) {
+        const task = response.data?.task;
+        if (task) setTask(task);
+      }
+      if (!response.ok) {
+        setPriority(task?.priority);
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while updating task priority.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+
+  const handleStatusChange = async (taskStatus: TaskStatus) => {
+    try {
+      console.log("Change status to", taskStatus);
+      setStatus(taskStatus);
+      const response = await updateUserTask(taskId, { taskStatus });
+      if (response.ok) {
+        const task = response.data?.task;
+        if (task) setTask(task);
+      }
+      if (!response.ok) {
+        setStatus(task?.status);
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while updating task status.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    }
+  };
+
   useEffect(() => {
     fetchUserTaskCall();
   }, [fetchUserTaskCall]);
+
+  const taskPriorityEntries = Object.entries(TaskPrirotyLabel) as [
+    TaskPriority,
+    string
+  ][];
+  const taskStatusEntries = Object.entries(TaskStatusLabel) as [
+    TaskStatus,
+    string
+  ][];
 
   if (isFetchingTask) {
     return (
@@ -118,13 +196,49 @@ export default function TaskPanel({ taskId }: Props) {
 
   return (
     <div className="max-w-[1440px] mx-auto side-px py-6 space-y-4">
-      <TaskHeading taskName={task?.name} onUpdateHeading={updateTaskHeading} />
+      <TaskHeading task={task} onUpdateHeading={updateTaskHeading} />
       <TaskDescription
         description={task?.description}
         onUpdateDescription={updateTaskDescription}
       />
-      <div className="mx-2">
-        <p className="">Created by: {task.userId}</p>
+      <div className="--mx-2 mb-10 p-6 bg-white border border-slate-200 rounded shadow-sm">
+        <h2 className="text-lg font-semibold mb-4">Task Details</h2>
+        <div className="space-y-3">
+          <div className="min-h-[37.6px] flex items-center">
+            <div className="inline-block w-52 font-semibold">Status:</div>
+            <div className="inline-block grow">
+              <Select
+                value={status ?? task.status}
+                onChange={handleStatusChange}
+                options={taskStatusEntries}
+                placeholder="Select status..."
+              />
+            </div>
+          </div>
+          <div className="min-h-[37.6px] flex items-center">
+            <div className="inline-block w-52 font-semibold">Priority:</div>
+            <div className="inline-block grow">
+              <Select
+                value={priority ?? task.priority}
+                onChange={handlePriorityChange}
+                options={taskPriorityEntries}
+                placeholder="Select priority..."
+              />
+            </div>
+          </div>
+          <div className="min-h-[37.6px] flex items-center">
+            <div className="inline-block w-52 font-semibold">Created by:</div>
+            <div className="inline-block grow">{task.creatorId}</div>
+          </div>
+          <div className="min-h-[37.6px] flex items-center">
+            <div className="inline-block w-52 font-semibold">Due Date:</div>
+            <div className="inline-block grow">
+              {task.dueDate?.toLocaleDateString() ?? (
+                <span className="text-slate-400">NA</span>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
       <div className="px-2 text-sm text-slate-400 space-y-1">
         <p>

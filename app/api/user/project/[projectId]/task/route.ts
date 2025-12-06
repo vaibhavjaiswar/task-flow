@@ -30,12 +30,22 @@ export async function POST(
       );
     }
 
-    const { userId } = payload;
+    const { userId, email } = payload;
     const { projectId } = await params;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
 
     const json = (await request.json()) as NewTaskFormInputs;
 
-    const { name, description } = json;
+    const { name, description, priority, status, dueDate } = json;
+    const dueDateObject = dueDate ? new Date(dueDate) : null;
 
     if (!name || name.trim().length === 0) {
       return NextResponse.json(
@@ -45,7 +55,15 @@ export async function POST(
     }
 
     const newTask = await prisma.task.create({
-      data: { name, description, projectId, userId },
+      data: {
+        name,
+        description,
+        priority,
+        status,
+        dueDate: dueDateObject,
+        projectId,
+        creatorId: userId,
+      },
     });
 
     const responseData: TaskResponseType = {

@@ -128,7 +128,7 @@ export default function ProjectPanel({ projectId }: Props) {
         description={project?.description}
         onUpdateDescription={updateProjectDescription}
       />
-      <div className="mx-2 p-3 max-w-sm bg-slate-100 flex items-center gap-4 border border-slate-200 rounded-md">
+      <div className="--mx-2 p-3 max-w-sm bg-slate-100 flex items-center gap-4 border border-slate-200 rounded-md">
         {project.owner.name && (
           <div className="h-10 aspect-square text-lg text-slate-100 bg-slate-800 rounded-full flex justify-center items-center">
             {project.owner.name.charAt(0)}
@@ -139,7 +139,7 @@ export default function ProjectPanel({ projectId }: Props) {
           <p className="text-sm text-slate-400">Project Owner</p>
         </div>
       </div>
-      <div className="mx-2 p-4 bg-slate-100 border border-slate-200 rounded-md">
+      <div className="--mx-2 p-4 bg-slate-100 border border-slate-200 rounded-md">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg text-slate-800">
             Tasks{" "}

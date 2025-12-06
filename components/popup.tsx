@@ -47,10 +47,8 @@ export function Popup({ children, open, setOpen }: PopupProps) {
   );
 }
 
-interface PopupTriggerProps extends Omit<
-  React.HTMLAttributes<HTMLDivElement>,
-  "onClick"
-> {
+interface PopupTriggerProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onClick"> {
   children: React.ReactNode;
 }
 
@@ -150,11 +148,13 @@ export function PopupContent({
       setPosition(position);
     };
 
-    // scroll anywhere
-    window.addEventListener("scroll", update, true);
+    if (open) {
+      // scroll anywhere
+      window.addEventListener("scroll", update, true);
 
-    // window resize
-    window.addEventListener("resize", update);
+      // window resize
+      window.addEventListener("resize", update);
+    }
 
     // layout changes
     const ro = new ResizeObserver(update);
@@ -167,7 +167,7 @@ export function PopupContent({
       window.removeEventListener("resize", update);
       ro.disconnect();
     };
-  }, [popupTriggerRef.current]);
+  }, [open, popupTriggerRef.current]);
 
   if (!portalElementCurrent) return null;
 
