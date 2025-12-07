@@ -1,6 +1,5 @@
 "use client";
 
-import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -15,26 +14,13 @@ export default function Dialog({
   onBackdropClick,
   ...rest
 }: Props) {
-  const [isVisible, setIsVisible] = useState(open);
   const { className, onClick, ...restCopy } = rest;
-
-  useLayoutEffect(() => {
-    if (open) {
-      setIsVisible(true);
-    } else {
-      const timeout = setTimeout(() => {
-        setIsVisible(false);
-      }, 200);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [open]);
 
   return createPortal(
     <div
       className={`fixed top-0 left-0 w-dvw h-dvh bg-slate-800/30 flex justify-center items-center ${
-        open ? "opacity-100" : "opacity-0"
-      } ${isVisible ? "visible" : "invisible"} transition-opacity`}
+        open ? "opacity-100 visible" : "opacity-0 invisible"
+      } transition-all`}
       onClick={onBackdropClick}
     >
       <div

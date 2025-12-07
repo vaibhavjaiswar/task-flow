@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
-import LoadingButton from "@/components/loading-button";
 import { login } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { LoginFormInputs } from "@/types";
+import LoadingButton from "@/components/loading-button";
 
 export default function LoginForm() {
   const {

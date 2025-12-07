@@ -16,7 +16,7 @@ export function timeAgo(date: string | Date) {
   return dayjs(date).fromNow();
 }
 
-export function debounce<T extends (...args: any[]) => void>(
+export function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   delay: number
 ): (...args: Parameters<T>) => void {

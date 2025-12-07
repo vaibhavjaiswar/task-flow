@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import dayjs from "dayjs";
 import { fetchUserProject, updateUserProject } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
-import ProjectHeading from "./project-heading";
-import ProjectDescription from "./project-description";
 import { ProjectWithDetails } from "@/types/api-response";
 import { timeAgo } from "@/utils";
 import AddNewTaskDialog from "./add-new-task";
-import dayjs from "dayjs";
+import ProjectHeading from "./project-heading";
+import ProjectDescription from "./project-description";
 
 interface Props {
   projectId: string;
@@ -28,7 +28,7 @@ export default function ProjectPanel({ projectId }: Props) {
     async (options?: { shouldUpdateInBackground?: boolean }) => {
       const showLoader = !options?.shouldUpdateInBackground;
       try {
-        showLoader && setIsFetchingProject(true);
+        if (showLoader) setIsFetchingProject(true);
         const response = await fetchUserProject(projectId);
         const { ok, message } = response;
 
@@ -38,7 +38,7 @@ export default function ProjectPanel({ projectId }: Props) {
             response.error
           );
           setError(message);
-          showLoader && setIsFetchingProject(false);
+          if (showLoader) setIsFetchingProject(false);
           return;
         }
 

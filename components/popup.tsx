@@ -167,7 +167,7 @@ export function PopupContent({
       window.removeEventListener("resize", update);
       ro.disconnect();
     };
-  }, [open, popupTriggerRef.current]);
+  }, [offset, open, popupTriggerRef, stickTo]);
 
   if (!portalElementCurrent) return null;
 

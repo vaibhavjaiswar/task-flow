@@ -1,11 +1,11 @@
-import LoadingButton from "@/components/loading-button";
+import { useRef, useState } from "react";
+import { Task } from "@/prisma/generated/client";
 import { Popup, PopupContent, PopupTrigger } from "@/components/popup";
 import { useToast } from "@/context/toast-context";
 import { TaskResponseType, ServerResponseType } from "@/types/api-response";
 import { MoreVertical, Trash } from "@deemlol/next-icons";
-import { useRef, useState } from "react";
 import DeleteTaskDialog from "./delete-task";
-import { Task } from "@/prisma/generated/client";
+import LoadingButton from "@/components/loading-button";
 
 interface Props {
   task: Task;

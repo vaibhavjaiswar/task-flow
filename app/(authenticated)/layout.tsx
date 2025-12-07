@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { isAuthTokenValid } from "@/utils/jwt";
+import NavBar from "@/components/nav-bar";
 import ToastProvider from "@/context/toast-context";
 import "@/app/globals.css";
-import NavBar from "@/components/nav-bar";
-import { isAuthTokenValid } from "@/utils/jwt";
 
 const inter = Inter({
   subsets: ["latin"],

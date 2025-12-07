@@ -1,13 +1,13 @@
 "use client";
 
-import { SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm, useWatch } from "react-hook-form";
+import { TaskPriority, TaskStatus } from "@/prisma/generated/enums";
 import { useToast } from "@/context/toast-context";
+import { createNewTaskInProject } from "@/apis";
 import { NewTaskFormInputs } from "@/types";
+import { TaskPrirotyLabel, TaskStatusLabel } from "@/utils";
 import Dialog from "@/components/dialog";
 import LoadingButton from "@/components/loading-button";
-import { createNewTaskInProject } from "@/apis";
-import { TaskPriority, TaskStatus } from "@/prisma/generated/enums";
-import { TaskPrirotyLabel, TaskStatusLabel } from "@/utils";
 import Select from "@/components/select";
 
 interface Props {
@@ -24,11 +24,11 @@ export default function AddNewTaskDialog({
   onSuccess,
 }: Props) {
   const {
+    control,
     register,
     handleSubmit,
     reset,
     setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<NewTaskFormInputs>({
     defaultValues: { status: "TODO", priority: "MEDIUM" },
@@ -70,15 +70,21 @@ export default function AddNewTaskDialog({
     }
   };
 
-  const status = watch("status");
+  const status = useWatch({
+    control,
+    name: "status",
+  });
   const taskStatusEntries = Object.entries(TaskStatusLabel) as [
     TaskStatus,
-    string,
+    string
   ][];
-  const priority = watch("priority");
+  const priority = useWatch({
+    control,
+    name: "priority",
+  });
   const taskPriorityEntries = Object.entries(TaskPrirotyLabel) as [
     TaskPriority,
-    string,
+    string
   ][];
 
   return (

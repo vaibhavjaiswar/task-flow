@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import prisma from "@/lib/prisma";
 import environment from "@/config/env";
 import { RegisterResponseType, ServerResponseType } from "@/types/api-response";
 import { ServerError } from "@/utils/server-error";

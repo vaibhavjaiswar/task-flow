@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { Project } from "@/prisma/generated/client";
-import { Popup, PopupContent, PopupTrigger } from "@/components/popup";
 import { useToast } from "@/context/toast-context";
 import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
 import { MoreVertical, Trash } from "@deemlol/next-icons";
+import { Popup, PopupContent, PopupTrigger } from "@/components/popup";
 import LoadingButton from "@/components/loading-button";
 import DeleteProjectDialog from "./delete-project-dialog";
 

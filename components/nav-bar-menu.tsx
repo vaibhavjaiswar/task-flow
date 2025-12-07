@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { fetchUser, logout } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { useUserStore } from "@/store/useUserStore";
@@ -14,7 +14,7 @@ export default function NavBarMenu() {
   const { showToast } = useToast();
   const { user, clearUser, setUser } = useUserStore();
 
-  const handleLogout = async () => {
+  const handleLogout = useCallback(async () => {
     const response = await logout();
 
     if (!response.ok) {
@@ -27,9 +27,9 @@ export default function NavBarMenu() {
 
     clearUser();
     router.push("/login");
-  };
+  }, [clearUser, router, showToast]);
 
-  const fetchUserCall = async () => {
+  const fetchUserCall = useCallback(async () => {
     const response = await fetchUser();
     if (!response.ok) {
       showToast({
@@ -49,11 +49,11 @@ export default function NavBarMenu() {
       return;
     }
     setUser(user);
-  };
+  }, [handleLogout, setUser, showToast]);
 
   useEffect(() => {
     fetchUserCall();
-  }, []);
+  }, [fetchUserCall]);
 
   return (
     <div className="flex items-center gap-2">

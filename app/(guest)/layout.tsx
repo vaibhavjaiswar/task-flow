@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import ToastProvider from "@/context/toast-context";
 import { isAuthTokenValid } from "@/utils/jwt";
+import ToastProvider from "@/context/toast-context";
 import "@/app/globals.css";
 
 const inter = Inter({

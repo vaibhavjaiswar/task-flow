@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useToast } from "@/context/toast-context";
 import { NewProjectFormInputs } from "@/types";
-import LoadingButton from "@/components/loading-button";
 import { createNewProject } from "@/apis";
+import LoadingButton from "@/components/loading-button";
 
 export default function NewProjectForm() {
   const {

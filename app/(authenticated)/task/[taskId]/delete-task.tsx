@@ -1,10 +1,10 @@
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { deleteUserTask } from "@/apis";
-import Dialog from "@/components/dialog";
-import LoadingButton from "@/components/loading-button";
 import { useToast } from "@/context/toast-context";
 import { Task } from "@/prisma/generated/client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import Dialog from "@/components/dialog";
+import LoadingButton from "@/components/loading-button";
 
 interface Props {
   open: boolean;

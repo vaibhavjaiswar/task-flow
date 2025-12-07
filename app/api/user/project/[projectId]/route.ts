@@ -275,11 +275,9 @@ export async function DELETE(
       );
     }
 
-    const response = await prisma.project.delete({
+    await prisma.project.delete({
       where: { id: project.id },
     });
-
-    console.log(response);
 
     return NextResponse.json(
       {

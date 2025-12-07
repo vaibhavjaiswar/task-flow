@@ -2,15 +2,15 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { Task, TaskPriority, TaskStatus } from "@/prisma/generated/client";
 import { fetchUserTask, updateUserTask } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
+import { TaskPrirotyLabel, TaskStatusLabel, timeAgo } from "@/utils";
+import Select from "@/components/select";
 import TaskHeading from "./task-heading";
 import TaskDescription from "./task-description";
-import { TaskPrirotyLabel, TaskStatusLabel, timeAgo } from "@/utils";
-import { Task, TaskPriority, TaskStatus } from "@/prisma/generated/client";
-import Select from "@/components/select";
-import dayjs from "dayjs";
 
 interface Props {
   taskId: string;
@@ -29,7 +29,7 @@ export default function TaskPanel({ taskId }: Props) {
     async (options?: { shouldUpdateInBackground?: boolean }) => {
       const showLoader = !options?.shouldUpdateInBackground;
       try {
-        showLoader && setIsFetchingTask(true);
+        if (showLoader) setIsFetchingTask(true);
         const response = await fetchUserTask(taskId);
         const { ok, message } = response;
 
@@ -39,7 +39,7 @@ export default function TaskPanel({ taskId }: Props) {
             response.error
           );
           setError(message);
-          showLoader && setIsFetchingTask(false);
+          if (showLoader) setIsFetchingTask(false);
           return;
         }
 
@@ -85,7 +85,6 @@ export default function TaskPanel({ taskId }: Props) {
 
   const handlePriorityChange = async (taskPriority: TaskPriority) => {
     try {
-      console.log("Change priority to", taskPriority);
       setPriority(taskPriority);
       const response = await updateUserTask(taskId, { taskPriority });
       if (response.ok) {
@@ -117,7 +116,6 @@ export default function TaskPanel({ taskId }: Props) {
 
   const handleStatusChange = async (taskStatus: TaskStatus) => {
     try {
-      console.log("Change status to", taskStatus);
       setStatus(taskStatus);
       const response = await updateUserTask(taskId, { taskStatus });
       if (response.ok) {
