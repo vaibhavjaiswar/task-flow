@@ -28,11 +28,21 @@ export interface LoginResponseType {
 }
 
 export interface UserResponseType {
-  user: Pick<User, "createdAt" | "email" | "id" | "name">;
+  user: Pick<User, "createdAt" | "email" | "name">;
 }
 
+export type DashboardProjectType = Project & {
+  owner: Pick<User, "email" | "name">;
+  tasks: {
+    total: number;
+    todo: number;
+    inProgress: number;
+    done: number;
+  };
+};
+
 export interface UserProjectsResponseType {
-  projects: Project[];
+  projects: DashboardProjectType[];
 }
 
 export type ProjectWithDetails = Project & {

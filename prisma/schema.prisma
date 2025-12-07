@@ -36,8 +36,8 @@ model Project {
   updatedAt   DateTime  @updatedAt
 
   // Foreign key to User or Project creator
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creatorId   Int
+  user        User      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
 
   // Tasks associated with this project
   tasks       Task[]

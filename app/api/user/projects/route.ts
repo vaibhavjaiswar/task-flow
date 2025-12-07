@@ -43,10 +43,48 @@ export async function GET(): Promise<
       );
     }
 
-    const projects = await prisma.project.findMany({ where: { userId } });
+    const projects = await prisma.project.findMany({
+      where: { creatorId: userId },
+      include: {
+        user: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+        tasks: {
+          select: {
+            id: true,
+            priority: true,
+            status: true,
+          },
+        },
+      },
+    });
 
     const responseData: UserProjectsResponseType = {
-      projects,
+      projects: projects.map((project) => {
+        const { done, inProgress, todo } = project.tasks.reduce(
+          (acc, task) => {
+            if (task.status === "DONE") acc.done++;
+            else if (task.status === "IN_PROGRESS") acc.inProgress++;
+            else if (task.status === "TODO") acc.todo++;
+            return acc;
+          },
+          { done: 0, inProgress: 0, todo: 0 }
+        );
+        return {
+          ...project,
+          owner: { email: project.user.email, name: project.user.name },
+          user: undefined,
+          tasks: {
+            done,
+            inProgress,
+            todo,
+            total: project.tasks.length,
+          },
+        };
+      }),
     };
 
     return NextResponse.json(

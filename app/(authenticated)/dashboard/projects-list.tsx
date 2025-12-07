@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { fetchUserProjects } from "@/apis";
-import { Project } from "@/prisma/generated/client";
 import { timeAgo } from "@/utils";
 import { useToast } from "@/context/toast-context";
+import { DashboardProjectType } from "@/types/api-response";
 
 export default function ProjectList() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<DashboardProjectType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,8 +105,8 @@ export default function ProjectList() {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-      {projects.map(({ id, name, description, updatedAt }) => {
-        // const { done, inprogress, todo, total } = tasks;
+      {projects.map(({ id, name, description, updatedAt, owner, tasks }) => {
+        const { done, inProgress, todo, total } = tasks;
         return (
           <Link
             key={id}
@@ -130,21 +130,21 @@ export default function ProjectList() {
             )}
 
             <p className="mb-3 text-sm text-slate-600">
-              <strong>Owner:</strong> {"owner"}
+              <strong>Owner:</strong> {owner.name}
             </p>
 
             <div className="space-y-1">
               <p className="text-sm text-slate-600">
-                <strong>Total:</strong> {"total"} task(s)
+                <strong>Total:</strong> {total} task{total > 1 ? "s" : ""}
               </p>
               <p className="text-sm text-slate-600">
-                <strong>Done:</strong> {"done"}
+                <strong>Done:</strong> {done}
               </p>
               <p className="text-sm text-slate-600">
-                <strong>In Progress:</strong> {"inprogress"}
+                <strong>In Progress:</strong> {inProgress}
               </p>
               <p className="text-sm text-slate-600">
-                <strong>To Do:</strong> {"todo"}
+                <strong>To Do:</strong> {todo}
               </p>
             </div>
 

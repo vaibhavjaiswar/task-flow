@@ -4,7 +4,7 @@ import { User } from "@/prisma/generated/client";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type UserType = Pick<User, "createdAt" | "email" | "id" | "name">;
+type UserType = Pick<User, "createdAt" | "email" | "name">;
 
 interface UserStore {
   user: UserType | null;

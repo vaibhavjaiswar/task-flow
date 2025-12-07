@@ -42,7 +42,7 @@ export async function GET(
     }
 
     const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
+      where: { id: projectId, creatorId: userId },
       include: {
         user: {
           select: {
@@ -154,7 +154,7 @@ export async function PATCH(
     }
 
     const existingProject = await prisma.project.findFirst({
-      where: { id: projectId, userId },
+      where: { id: projectId, creatorId: userId },
     });
 
     if (!existingProject) {
@@ -265,7 +265,7 @@ export async function DELETE(
     }
 
     const project = await prisma.project.findFirst({
-      where: { id: projectId, userId },
+      where: { id: projectId, creatorId: userId },
     });
 
     if (!project) {

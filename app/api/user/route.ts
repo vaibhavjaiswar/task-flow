@@ -42,7 +42,7 @@ export async function GET(): Promise<
 
     const responseData: UserResponseType = {
       user: {
-        id: user.id,
+        // id: user.id,
         email: user.email,
         name: user.name,
         createdAt: user.createdAt,
