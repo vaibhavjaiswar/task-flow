@@ -122,7 +122,7 @@ export default function ProjectPanel({ projectId }: Props) {
   return (
     <div className="max-w-[1440px] mx-auto side-px py-6 space-y-4">
       <ProjectHeading
-        projectName={project?.name}
+        project={project}
         onUpdateHeading={updateProjectHeading}
       />
       <ProjectDescription

@@ -227,3 +227,80 @@ export async function PATCH(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ projectId: string }> }
+): Promise<NextResponse<ServerResponseType<ProjectResponseType>>> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json(
+        { ok: false, message: "Authentication token missing." },
+        { status: 401 }
+      );
+    }
+
+    const payload = getTokenPayloadByVerifying(token);
+
+    if (!payload) {
+      return NextResponse.json(
+        { ok: false, message: "Authentication token invalid." },
+        { status: 401 }
+      );
+    }
+
+    const { userId, email } = payload;
+    const { projectId } = await params;
+
+    const user = await prisma.user.findUnique({ where: { email, id: userId } });
+
+    if (!user) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
+
+    const project = await prisma.project.findFirst({
+      where: { id: projectId, userId },
+    });
+
+    if (!project) {
+      return NextResponse.json(
+        { ok: false, message: "Project not found." },
+        { status: 404 }
+      );
+    }
+
+    const response = await prisma.project.delete({
+      where: { id: project.id },
+    });
+
+    console.log(response);
+
+    return NextResponse.json(
+      {
+        ok: true,
+        message: "Project deleted successfully.",
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Fetch project error:", error);
+
+    const errorMessage =
+      error instanceof ServerError
+        ? error.message
+        : "An error occurred while fetching the project.";
+    const errorStatusCode =
+      error instanceof ServerError ? error.statusCode : 500;
+
+    return NextResponse.json(
+      { ok: false, message: errorMessage },
+      { status: errorStatusCode }
+    );
+  }
+}

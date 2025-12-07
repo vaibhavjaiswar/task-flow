@@ -123,6 +123,16 @@ export async function updateUserProject(
   return data;
 }
 
+export async function deleteUserProject(projectId: string) {
+  const response = await fetch(`${SERVER_URL}/api/user/project/${projectId}`, {
+    method: "DELETE",
+  });
+
+  const data: ServerResponseType<null> = await response.json();
+
+  return data;
+}
+
 export async function createNewTaskInProject(
   projectId: string,
   task: NewTaskFormInputs
