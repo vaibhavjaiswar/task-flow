@@ -54,6 +54,11 @@ export interface ProjectResponseType {
   project: ProjectWithDetails;
 }
 
+export type TaskType = Task & {
+  project: Pick<Project, "id" | "name">;
+  creator: Pick<User, "email" | "name">;
+};
+
 export interface TaskResponseType {
-  task: Task;
+  task: TaskType;
 }

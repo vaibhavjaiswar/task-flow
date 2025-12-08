@@ -121,6 +121,17 @@ export default function ProjectPanel({ projectId }: Props) {
 
   return (
     <div className="max-w-[1440px] mx-auto side-px py-6 space-y-4">
+      <div className="text-sm text-slate-400 flex items-center gap-1">
+        <span>Project</span>
+        <span>/</span>
+        <Link
+          href={`/project/${project.id}`}
+          title={project.name}
+          className="inline-block text-slate-800! max-w-44! truncate"
+        >
+          {project.name}
+        </Link>
+      </div>
       <ProjectHeading
         project={project}
         onUpdateHeading={updateProjectHeading}

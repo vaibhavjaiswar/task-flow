@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { Task, TaskPriority, TaskStatus } from "@/prisma/generated/client";
+import { TaskPriority, TaskStatus } from "@/prisma/generated/client";
 import { fetchUserTask, updateUserTask } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
 import { TaskPrirotyLabel, TaskStatusLabel, timeAgo } from "@/utils";
+import { TaskType } from "@/types/api-response";
 import Select from "@/components/select";
 import TaskHeading from "./task-heading";
 import TaskDescription from "./task-description";
@@ -17,7 +18,7 @@ interface Props {
 }
 
 export default function TaskPanel({ taskId }: Props) {
-  const [task, setTask] = useState<Task | null>(null);
+  const [task, setTask] = useState<TaskType | null>(null);
   const [isFetchingTask, setIsFetchingTask] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [priority, setPriority] = useState<TaskPriority>();
@@ -195,11 +196,43 @@ export default function TaskPanel({ taskId }: Props) {
 
   return (
     <div className="max-w-[1440px] mx-auto side-px py-6 space-y-4">
+      <div className="text-sm text-slate-400 flex items-center gap-1">
+        <span>Project</span>
+        <span>/</span>
+        <Link
+          href={`/project/${task.project.id}`}
+          title={task.project.name}
+          className="inline-block text-slate-400! hover:text-slate-800! max-w-44! truncate"
+        >
+          {task.project.name}
+        </Link>
+        <span>/</span>
+        <span>Task</span>
+        <span>/</span>
+        <Link
+          href={`/task/${task.id}`}
+          title={task.name}
+          className="inline-block text-slate-800! max-w-44! truncate"
+        >
+          {task.name}
+        </Link>
+      </div>
       <TaskHeading task={task} onUpdateHeading={updateTaskHeading} />
       <TaskDescription
         description={task?.description}
         onUpdateDescription={updateTaskDescription}
       />
+      <div className="--mx-2 p-3 max-w-sm bg-slate-100 flex items-center gap-4 border border-slate-200 rounded-md">
+        {task.creator.name && (
+          <div className="h-10 aspect-square text-lg text-slate-100 bg-slate-800 rounded-full flex justify-center items-center">
+            {task.creator.name.charAt(0)}
+          </div>
+        )}
+        <div>
+          <p>{task.creator.name}</p>
+          <p className="text-sm text-slate-400">Task Creator</p>
+        </div>
+      </div>
       <div className="--mx-2 mb-10 p-6 bg-white border border-slate-200 rounded shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Task Details</h2>
         <div className="space-y-3">

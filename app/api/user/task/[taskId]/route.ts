@@ -44,9 +44,11 @@ export async function GET(
     const task = await prisma.task.findFirst({
       where: { id: taskId, creatorId: userId },
       include: {
+        project: {
+          select: { id: true, name: true },
+        },
         user: {
           select: {
-            createdAt: true,
             email: true,
             name: true,
           },
@@ -61,7 +63,9 @@ export async function GET(
       );
     }
 
-    const responseData: TaskResponseType = { task };
+    const responseData: TaskResponseType = {
+      task: { ...task, creator: task.user },
+    };
 
     return NextResponse.json(
       {
@@ -153,10 +157,21 @@ export async function PATCH(
         status: status ?? existingTask.status,
         priority: priority ?? existingTask.priority,
       },
+      include: {
+        project: {
+          select: { id: true, name: true },
+        },
+        user: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+      },
     });
 
     const responseData: TaskResponseType = {
-      task: updatedTask,
+      task: { ...updatedTask, creator: updatedTask.user },
     };
 
     return NextResponse.json(
