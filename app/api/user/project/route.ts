@@ -52,7 +52,7 @@ export async function POST(
     }
 
     const newProject = await prisma.project.create({
-      data: { name, description, creatorId: userId },
+      data: { name: name.trim(), description, creatorId: userId },
     });
 
     const responseData = {

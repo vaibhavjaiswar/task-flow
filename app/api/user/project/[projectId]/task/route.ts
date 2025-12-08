@@ -56,7 +56,7 @@ export async function POST(
 
     const newTask = await prisma.task.create({
       data: {
-        name,
+        name: name.trim(),
         description,
         priority,
         status,
