@@ -29,7 +29,7 @@ const closeButtonStyles: Record<ToastVariantType, string> = {
 export default function Toast({ id, message, type, onClose }: Props) {
   return (
     <div
-      className={`min-w-xs max-w-full sm:max-w-xs px-4 py-3 text-sm flex justify-between items-start gap-3 rounded-md shadow-sm hover:shadow-md ${variantStyles[type]}`}
+      className={`min-w-xs max-w-full sm:max-w-xs px-4 py-3 text-sm flex justify-between items-start gap-3 rounded-md shadow-sm hover:shadow-md ${variantStyles[type]} z-50`}
     >
       {message}
       <button
