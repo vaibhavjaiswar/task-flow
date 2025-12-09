@@ -73,7 +73,7 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
       <input
         ref={inputRef}
         type="text"
-        className={`absolute top-0 left-0 right-0 block w-full text-2xl sm:text-3xl font-semibold ${
+        className={`absolute top-0 bottom-0 left-0 right-0 block w-full text-2xl sm:text-3xl font-semibold ${
           isEditing ? "opacity-100 visible" : "opacity-0 invisible"
         } shadow-lg`}
         value={newName}
@@ -98,7 +98,7 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
       )}
       <Popup open={showOption} setOpen={setShowOption}>
         <PopupTrigger>
-          <div className="p-[9.5px] sm:p-[11.5px] hover:bg-slate-200 rounded cursor-pointer">
+          <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] flex justify-center items-center hover:bg-slate-200 rounded cursor-pointer">
             <MoreVertical size={22} className="text-slate-800" />
           </div>
         </PopupTrigger>
