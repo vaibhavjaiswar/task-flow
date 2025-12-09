@@ -54,7 +54,7 @@ export default function NewProjectForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="max-w-lg lg:max-w-2xl space-y-4"
+      className="space-y-4"
     >
       {/* Project Name */}
       <label className="block">
@@ -86,11 +86,11 @@ export default function NewProjectForm() {
         )}
       </label>
       {/* Buttons */}
-      <div className="max-w-full flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4">
+      <div className="max-w-full flex flex-col sm:flex-row justify-center sm:justify-normal items-center gap-2 sm:gap-4">
         <LoadingButton
           type="submit"
           isLoading={isSubmitting}
-          className="flex-1 primary-button w-full sm:w-auto"
+          className="flex-1 max-w-full sm:max-w-3xs primary-button w-full sm:w-auto"
         >
           Create Project
         </LoadingButton>
@@ -98,7 +98,7 @@ export default function NewProjectForm() {
         <button
           type="button"
           onClick={() => reset()}
-          className="flex-1 secondary-button w-full sm:w-auto"
+          className="flex-1 max-w-full sm:max-w-3xs secondary-button w-full sm:w-auto"
         >
           Reset
         </button>
