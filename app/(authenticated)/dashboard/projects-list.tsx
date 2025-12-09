@@ -120,12 +120,16 @@ export default function ProjectList() {
               {name}
             </h2>
 
-            {description && (
+            {description ? (
               <p
                 className="mb-4 text-sm text-slate-600 line-clamp-2"
                 title={description}
               >
                 {description}
+              </p>
+            ) : (
+              <p className="mb-4 text-sm text-slate-400">
+                No description provided...
               </p>
             )}
 

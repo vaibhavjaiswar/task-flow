@@ -177,7 +177,7 @@ export function PopupContent({
       className={
         `fixed top-0 left-0 ${
           open ? "opacity-100 visible" : "opacity-0 invisible"
-        } transition-opacity shadow-lg ` + className
+        } transition-all shadow-lg ` + className
       }
       style={{
         left: position.left,
