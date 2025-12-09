@@ -68,7 +68,7 @@ export default function NavBarMenu() {
             )}
           </div>
         </PopupTrigger>
-        <PopupContent offset={8} stickTo="right">
+        <PopupContent offset={8} stickTo="right" className="z-40">
           <div className="min-w-52 border border-slate-300 rounded-md shadow-lg overflow-hidden">
             <div
               className="px-4 py-2 text-slate-800 bg-slate-100 hover:bg-slate-200 flex items-center gap-2 cursor-pointer"
