@@ -179,12 +179,20 @@ export default function AddNewTaskDialog({
             Create Task
           </LoadingButton>
 
-          <button
+          {/* <button
             type="button"
             onClick={() => reset()}
             className="flex-1 secondary-button w-full sm:w-auto"
           >
             Reset
+          </button> */}
+
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            className="flex-1 secondary-button w-full sm:w-auto"
+          >
+            Close
           </button>
         </div>
       </form>
