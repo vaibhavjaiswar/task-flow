@@ -24,6 +24,9 @@ model User {
   // Projects created by the user
   projects  Project[]
 
+  // Projects the user is a member of
+  projectMembers  ProjectMember[]
+
   // Tasks created by the user
   tasks     Task[]
 }
@@ -38,6 +41,9 @@ model Project {
   // Foreign key to User or Project creator
   creatorId   Int
   user        User      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Project members
+  members     ProjectMember[]
 
   // Tasks associated with this project
   tasks       Task[]
@@ -75,4 +81,29 @@ enum TaskPriority {
   LOW
   MEDIUM
   HIGH
+}
+
+model ProjectMember {
+  id          Int      @id @default(autoincrement())
+
+  userId      Int
+  projectId   String
+
+  // Foreign key to User who is a member of the Project
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Foreign key to Project that User have access to OR member of the same
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  role      ProjectRole @default(MEMBER)
+
+  // Ensures a user can only be added once to the same project
+  @@unique([userId, projectId])
+}
+
+enum ProjectRole {
+  ADMIN
+  EDITOR
+  VIEWER
+  MEMBER
 }

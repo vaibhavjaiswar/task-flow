@@ -1,14 +1,20 @@
+"use client";
+
 import { useRef, useState } from "react";
-import { Project } from "@/prisma/generated/client";
 import { useToast } from "@/context/toast-context";
-import { ProjectResponseType, ServerResponseType } from "@/types/api-response";
-import { MoreVertical, Trash } from "@deemlol/next-icons";
+import {
+  ProjectResponseType,
+  ProjectWithDetails,
+  ServerResponseType,
+} from "@/types/api-response";
+import { MoreVertical, Trash, User } from "@deemlol/next-icons";
 import { Popup, PopupContent, PopupTrigger } from "@/components/popup";
 import LoadingButton from "@/components/loading-button";
 import DeleteProjectDialog from "./delete-project-dialog";
+import ProjectMemberDialog from "./project-members-dialog";
 
 interface Props {
-  project: Project;
+  project: ProjectWithDetails;
   onUpdateHeading: (
     projectName: string
   ) => Promise<ServerResponseType<ProjectResponseType>>;
@@ -20,6 +26,7 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [showOption, setShowOption] = useState(false);
   const [showDeleteTaskDialog, setShowDeleteProjectDialog] = useState(false);
+  const [showAddMemberDialog, setShowAddMemberDialog] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -98,7 +105,7 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
       )}
       <Popup open={showOption} setOpen={setShowOption}>
         <PopupTrigger>
-          <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] flex justify-center items-center hover:bg-slate-200 rounded cursor-pointer">
+          <div className="w-[42px] h-[42px] sm:w-12 sm:h-12 flex justify-center items-center hover:bg-slate-200 rounded cursor-pointer">
             <MoreVertical size={22} className="text-slate-800" />
           </div>
         </PopupTrigger>
@@ -108,7 +115,17 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
           className="min-w-52 border border-slate-300 rounded-md shadow-lg overflow-hidden"
         >
           <div
-            className="px-4 py-2 text-red-700 bg-slate-100 hover:bg-red-100 flex items-center gap-2 cursor-pointer"
+            className="px-4 py-2 text-slate-800 bg-white hover:bg-slate-100 flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setShowAddMemberDialog(true);
+              setShowOption(false);
+            }}
+          >
+            <User size={18} />
+            Project members
+          </div>
+          <div
+            className="px-4 py-2 text-red-700 bg-white hover:bg-red-100 flex items-center gap-2 cursor-pointer"
             onClick={() => {
               setShowDeleteProjectDialog(true);
               setShowOption(false);
@@ -123,6 +140,11 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
         open={showDeleteTaskDialog}
         project={project}
         setOpen={setShowDeleteProjectDialog}
+      />
+      <ProjectMemberDialog
+        open={showAddMemberDialog}
+        project={project}
+        setOpen={setShowAddMemberDialog}
       />
     </div>
   );

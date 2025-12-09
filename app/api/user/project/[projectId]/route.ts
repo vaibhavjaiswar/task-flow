@@ -42,7 +42,18 @@ export async function GET(
     }
 
     const project = await prisma.project.findFirst({
-      where: { id: projectId, creatorId: userId },
+      // where: { id: projectId, creatorId: userId },
+      where: {
+        AND: [
+          { id: projectId },
+          {
+            OR: [
+              { creatorId: userId },
+              { members: { some: { userId: userId } } },
+            ],
+          },
+        ],
+      },
       include: {
         user: {
           select: {
@@ -65,6 +76,12 @@ export async function GET(
             creatorId: true,
           },
         },
+        members: {
+          select: {
+            user: { select: { email: true, name: true } },
+            role: true,
+          },
+        },
       },
     });
 
@@ -75,11 +92,14 @@ export async function GET(
       );
     }
 
+    const normalizedProject = {
+      ...project,
+      owner: project.user,
+      user: undefined,
+    };
+
     const responseData: ProjectResponseType = {
-      project: {
-        ...project,
-        owner: project.user,
-      },
+      project: normalizedProject,
     };
 
     return NextResponse.json(
@@ -192,14 +212,23 @@ export async function PATCH(
             creatorId: true,
           },
         },
+        members: {
+          select: {
+            user: { select: { email: true, name: true } },
+            role: true,
+          },
+        },
       },
     });
 
+    const normalizedUpdatedProject = {
+      ...updatedProject,
+      owner: updatedProject.user,
+      user: undefined,
+    };
+
     const responseData: ProjectResponseType = {
-      project: {
-        ...updatedProject,
-        owner: updatedProject.user,
-      },
+      project: normalizedUpdatedProject,
     };
 
     return NextResponse.json(

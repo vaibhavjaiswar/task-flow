@@ -44,7 +44,9 @@ export async function GET(): Promise<
     }
 
     const projects = await prisma.project.findMany({
-      where: { creatorId: userId },
+      where: {
+        OR: [{ creatorId: userId }, { members: { some: { userId: userId } } }],
+      },
       include: {
         user: {
           select: {

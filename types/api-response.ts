@@ -1,4 +1,4 @@
-import { Project, Task, User } from "@/prisma/generated/client";
+import { Project, ProjectRole, Task, User } from "@/prisma/generated/client";
 
 export interface SuccessResponse<T = unknown> {
   ok: true;
@@ -48,6 +48,13 @@ export interface UserProjectsResponseType {
 export type ProjectWithDetails = Project & {
   owner: Pick<User, "createdAt" | "email" | "name">;
   tasks: Task[];
+  members: {
+    user: {
+      name: string;
+      email: string;
+    };
+    role: ProjectRole;
+  }[];
 };
 
 export interface ProjectResponseType {

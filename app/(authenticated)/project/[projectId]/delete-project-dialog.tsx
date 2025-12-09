@@ -1,14 +1,14 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Project } from "@/prisma/generated/client";
 import { useToast } from "@/context/toast-context";
 import { deleteUserProject } from "@/apis";
 import Dialog from "@/components/dialog";
 import LoadingButton from "@/components/loading-button";
+import { ProjectWithDetails } from "@/types/api-response";
 
 interface Props {
   open: boolean;
-  project: Project;
+  project: ProjectWithDetails;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 

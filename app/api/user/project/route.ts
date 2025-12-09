@@ -51,8 +51,16 @@ export async function POST(
       );
     }
 
-    const newProject = await prisma.project.create({
-      data: { name: name.trim(), description, creatorId: userId },
+    const { newProject } = await prisma.$transaction(async (prisma) => {
+      const newProject = await prisma.project.create({
+        data: { name: name.trim(), description, creatorId: userId },
+      });
+
+      const projectMember = await prisma.projectMember.create({
+        data: { projectId: newProject.id, userId: user.id, role: "ADMIN" },
+      });
+
+      return { newProject, projectMember };
     });
 
     const responseData = {
