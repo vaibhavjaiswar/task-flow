@@ -20,7 +20,7 @@ export default function Dialog({
     <div
       className={`fixed top-0 left-0 w-dvw h-dvh bg-slate-800/30 flex justify-center items-center ${
         open ? "opacity-100 visible" : "opacity-0 invisible"
-      } transition-all`}
+      } transition-all z-50`}
       onClick={onBackdropClick}
     >
       <div
