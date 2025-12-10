@@ -47,3 +47,6 @@ export const TaskPrirotyLabel: Record<TaskPriority, string> = {
   MEDIUM: "Medium",
   HIGH: "High",
 };
+
+export const emailRegex =
+  /^(?!.*\.\.)[A-Za-z0-9_%+-](?:[A-Za-z0-9._%+-]*[A-Za-z0-9_%+-])?@(?:[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\.)+[A-Za-z]{2,10}$/;
