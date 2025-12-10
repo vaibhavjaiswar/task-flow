@@ -45,16 +45,18 @@ export interface UserProjectsResponseType {
   projects: DashboardProjectType[];
 }
 
+export type MemberType = {
+  user: {
+    name: string;
+    email: string;
+  };
+  role: ProjectRole;
+};
+
 export type ProjectWithDetails = Project & {
   owner: Pick<User, "createdAt" | "email" | "name">;
   tasks: Task[];
-  members: {
-    user: {
-      name: string;
-      email: string;
-    };
-    role: ProjectRole;
-  }[];
+  members: MemberType[];
 };
 
 export interface ProjectResponseType {

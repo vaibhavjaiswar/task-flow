@@ -1,5 +1,6 @@
 import {
   LoginFormInputs,
+  MemberType,
   NewProjectFormInputs,
   NewTaskFormInputs,
   RegisterFormInputs,
@@ -129,6 +130,26 @@ export async function deleteUserProject(projectId: string) {
   });
 
   const data: ServerResponseType<null> = await response.json();
+
+  return data;
+}
+
+export async function addMembersInProject(
+  projectId: string,
+  newMembers: MemberType[]
+) {
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/members`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        newMembers,
+      }),
+    }
+  );
+
+  const data: ServerResponseType<ProjectResponseType> = await response.json();
 
   return data;
 }

@@ -1,4 +1,8 @@
-import { TaskPriority, TaskStatus } from "@/prisma/generated/enums";
+import {
+  ProjectRole,
+  TaskPriority,
+  TaskStatus,
+} from "@/prisma/generated/enums";
 
 export interface LoginFormInputs {
   email: string;
@@ -29,3 +33,5 @@ export interface AuthTokenType {
   iat: number;
   exp: number;
 }
+
+export type MemberType = { email: string; role: ProjectRole };
