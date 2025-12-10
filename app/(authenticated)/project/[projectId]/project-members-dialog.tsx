@@ -59,12 +59,13 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
     setNewMemberEmails([]);
     if (newMemberEmailsInput) {
       const emailArray = newMemberEmailsInput.split(",");
-      console.log(emailArray);
-      emailArray.forEach((email) => {
+      const uniqueEmails = [
+        ...new Set(
+          emailArray.map(email => email.trim().toLowerCase())
+        )
+      ];
+      uniqueEmails.forEach((email) => {
         const isEmailValid = emailRegex.test(email);
-        console.log(
-          `Email "${email}" is ${isEmailValid ? "VALID" : "INVALID"}`
-        );
         if (isEmailValid) {
           setNewMemberEmails((emails) => [...emails, email]);
         }
@@ -114,7 +115,7 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
           <div className="mb-4 text-sm">
             <h3 className="mb-2 text-sm">These members will be added:</h3>
             {newMemberEmails.map((newMemberEmail) => (
-              <span className="inline-block px-3 py-1 text-green-600 hover:text-green-700 bg-green-100 border border-green-200 hover:border-green-300 rounded-full">
+              <span key={newMemberEmail} className="inline-block px-3 py-1 text-green-600 hover:text-green-700 bg-green-100 border border-green-200 hover:border-green-300 rounded-full">
                 {newMemberEmail}
               </span>
             ))}
