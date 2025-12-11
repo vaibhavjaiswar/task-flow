@@ -34,4 +34,4 @@ export interface AuthTokenType {
   exp: number;
 }
 
-export type MemberType = { email: string; role: ProjectRole };
+export type InputMemberType = { email: string; role: ProjectRole };
