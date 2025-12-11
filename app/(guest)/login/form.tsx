@@ -56,7 +56,7 @@ export default function LoginForm() {
         <span className="text-sm mb-1">Email</span>
         <input
           type="email"
-          defaultValue={"user@email.com"}
+          defaultValue={"testuser@email.com"}
           placeholder="Type your email..."
           className="block w-full border rounded px-3 py-2"
           {...register("email", {

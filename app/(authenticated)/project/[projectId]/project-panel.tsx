@@ -135,6 +135,7 @@ export default function ProjectPanel({ projectId }: Props) {
       <ProjectHeading
         project={project}
         onUpdateHeading={updateProjectHeading}
+        fetchProjectCall={fetchUserProjectCall}
       />
       <ProjectDescription
         description={project?.description}

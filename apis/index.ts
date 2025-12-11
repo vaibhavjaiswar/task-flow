@@ -16,6 +16,7 @@ import {
 } from "@/types/api-response";
 import environment from "@/config/env";
 import { TaskPriority, TaskStatus } from "@/prisma/generated/enums";
+import { MemberResponseType } from "@/app/api/user/project/[projectId]/members/route";
 
 const SERVER_URL = environment.NEXT_PUBLIC_BASE_URL;
 
@@ -149,7 +150,27 @@ export async function addMembersInProject(
     }
   );
 
-  const data: ServerResponseType<ProjectResponseType> = await response.json();
+  const data: ServerResponseType<MemberResponseType> = await response.json();
+
+  return data;
+}
+
+export async function removeMembersInProject(
+  projectId: string,
+  membersToRemove: InputMemberType[]
+) {
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/members`,
+    {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        membersToRemove,
+      }),
+    }
+  );
+
+  const data: ServerResponseType<MemberResponseType> = await response.json();
 
   return data;
 }

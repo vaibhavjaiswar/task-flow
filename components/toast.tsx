@@ -12,7 +12,7 @@ interface Props {
 
 const variantStyles: Record<ToastVariantType, string> = {
   error: "bg-red-600! text-white! border! border-red-700!",
-  info: "bg-slate-300! text-slate-800! border! border-slate-400!",
+  info: "bg-slate-200! text-slate-800! border! border-slate-400!",
   neutral: "bg-white! text-slate-800! border! border-slate-300!",
   success: "bg-green-600! text-white! border! border-green-700!",
   warning: "bg-yellow-400! text-slate-900! border! border-yellow-600!",

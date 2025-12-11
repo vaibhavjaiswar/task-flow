@@ -18,9 +18,16 @@ interface Props {
   onUpdateHeading: (
     projectName: string
   ) => Promise<ServerResponseType<ProjectResponseType>>;
+  fetchProjectCall: (options?: {
+    shouldUpdateInBackground?: boolean | undefined;
+  }) => Promise<void>;
 }
 
-export default function ProjectHeading({ project, onUpdateHeading }: Props) {
+export default function ProjectHeading({
+  project,
+  onUpdateHeading,
+  fetchProjectCall,
+}: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(project.name);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -145,6 +152,7 @@ export default function ProjectHeading({ project, onUpdateHeading }: Props) {
         open={showAddMemberDialog}
         project={project}
         setOpen={setShowAddMemberDialog}
+        fetchProjectCall={fetchProjectCall}
       />
     </div>
   );

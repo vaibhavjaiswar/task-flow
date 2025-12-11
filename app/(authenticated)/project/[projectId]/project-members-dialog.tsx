@@ -1,9 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useToast } from "@/context/toast-context";
-import { addMembersInProject } from "@/apis";
+import { addMembersInProject, removeMembersInProject } from "@/apis";
 import { ProjectWithDetails } from "@/types/api-response";
 import { InputMemberType } from "@/types";
 import { emailRegex } from "@/utils";
@@ -15,10 +14,21 @@ interface Props {
   open: boolean;
   project: ProjectWithDetails;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchProjectCall: (options?: {
+    shouldUpdateInBackground?: boolean | undefined;
+  }) => Promise<void>;
 }
 
-export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
+export default function ProjectMemberDialog({
+  open,
+  project,
+  setOpen,
+  fetchProjectCall,
+}: Props) {
   const [isAddingMember, setIsAddingMember] = useState(false);
+  const [isRemovingMemberWithEmail, setIsRemovingMemberWithEmail] = useState<
+    string | null
+  >(null);
   const [members, setMembers] = useState<InputMemberType[]>(
     project.members.map((member) => ({
       email: member.user.email,
@@ -27,14 +37,13 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
   );
   const [newMemberEmailsInput, setNewMemberEmailsInput] = useState<string>("");
   const [newMembers, setNewMembers] = useState<InputMemberType[]>([]);
-  // const [removedMembers, setRemovedMembers] = useState<MemberType[]>([]);
 
   const { showToast } = useToast();
-  const router = useRouter();
 
   const handleAddMember = async () => {
     try {
       setIsAddingMember(true);
+
       const response = await addMembersInProject(project.id, newMembers);
       const { ok, message } = response;
 
@@ -43,10 +52,13 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
       }
 
       showToast({
-        type: "success",
-        message: "Member(s) added to the project.",
+        type: message.includes("0") ? "info" : "success",
+        message: message,
       });
-      // setOpen(false);
+
+      fetchProjectCall({ shouldUpdateInBackground: true });
+      setNewMemberEmailsInput("");
+      setOpen(false);
     } catch (error) {
       console.error(error);
 
@@ -64,9 +76,48 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
     }
   };
 
-  const handleRemoveMember = (member: InputMemberType) => {
-    console.log("Remove member:", member);
+  const handleRemoveMember = async (member: InputMemberType) => {
+    try {
+      setIsRemovingMemberWithEmail(member.email);
+
+      const response = await removeMembersInProject(project.id, [member]);
+      const { ok, message } = response;
+
+      if (!ok) {
+        throw new Error(message);
+      }
+
+      showToast({
+        type: "info",
+        message: message,
+      });
+
+      fetchProjectCall({ shouldUpdateInBackground: true });
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while removing member from project.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setIsRemovingMemberWithEmail(member.email);
+    }
   };
+
+  useEffect(() => {
+    setMembers(
+      project.members.map((member) => ({
+        email: member.user.email,
+        role: member.role,
+      }))
+    );
+  }, [project.members]);
 
   useEffect(() => {
     setNewMembers([]);
@@ -88,7 +139,7 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
         }
       });
     }
-  }, [newMemberEmailsInput]);
+  }, [newMemberEmailsInput, members]);
 
   return (
     <Dialog
@@ -102,19 +153,25 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
           Manage who can access and collaborate on this project.
         </p>
       </div>
-      <div className="mb-2 p-4 py-3 border border-slate-400 rounded-2xl">
-        <h2 className="mb-2 text-sm">Current members</h2>
+      <div className="mb-2 p-4 py-3 border border-slate-400 rounded-md">
+        <h2 className="mb-2 text-sm">
+          Current member{project.members.length > 1 ? "s" : ""}
+        </h2>
         <p className="text-sm flex gap-2 flex-wrap">
           {project.members.length > 0 ? (
             project.members.map((member) => (
               <span
                 key={member.user.email}
-                className="flex items-center gap-1 w-max px-3 py-1 text-slate-600 hover:text-slate-700 bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-full"
+                className={`flex items-center gap-1 w-max px-2 py-1 text-slate-600 hover:text-slate-700 bg-slate-100 border border-slate-200 hover:border-slate-300 rounded-md ${
+                  isRemovingMemberWithEmail === member.user.email
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
               >
                 {member.user.email}
                 {member.role !== "ADMIN" ? (
                   <span
-                    className="mt-0.5 w-3 h-3 flex justify-center items-center aspect-square"
+                    className="mt-0.5 w-3 h-3 flex justify-center items-center aspect-square cursor-pointer"
                     onClick={() =>
                       handleRemoveMember({
                         email: member.user.email,
@@ -152,7 +209,7 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
             {newMembers.map((newMember) => (
               <span
                 key={newMember.email}
-                className="inline-block px-3 py-1 text-blue-600 hover:text-blue-700 bg-blue-100 border border-blue-200 hover:border-blue-300 rounded-full"
+                className="inline-block px-2 py-1 text-blue-600 hover:text-blue-700 bg-blue-100 border border-blue-200 hover:border-blue-300 rounded-md"
               >
                 {newMember.email}
               </span>
