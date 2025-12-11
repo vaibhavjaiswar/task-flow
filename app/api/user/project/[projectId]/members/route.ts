@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { getTokenPayloadByVerifying } from "@/utils/jwt";
 import { ServerError } from "@/utils/server-error";
-import { MemberType } from "@/types";
+import { InputMemberType } from "@/types";
 import { ServerResponseType, ProjectResponseType } from "@/types/api-response";
 
 export async function POST(
@@ -56,7 +56,7 @@ export async function POST(
     }
 
     const { newMembers } = (await request.json()) as {
-      newMembers: MemberType[];
+      newMembers: InputMemberType[];
     };
     console.log("Add new members:", newMembers);
 

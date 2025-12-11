@@ -97,7 +97,7 @@ export default function TaskHeading({ task, onUpdateHeading }: Props) {
       )}
       <Popup open={showOption} setOpen={setShowOption}>
         <PopupTrigger>
-          <div className="w-[42px] h-[42px] sm:w-[48px] sm:h-[48px] flex justify-center items-center hover:bg-slate-200 rounded cursor-pointer">
+          <div className="w-[42px] h-[42px] sm:w-12 sm:h-12 flex justify-center items-center hover:bg-slate-200 rounded cursor-pointer">
             <MoreVertical size={22} className="text-slate-800" />
           </div>
         </PopupTrigger>

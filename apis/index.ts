@@ -1,6 +1,6 @@
 import {
   LoginFormInputs,
-  MemberType,
+  InputMemberType,
   NewProjectFormInputs,
   NewTaskFormInputs,
   RegisterFormInputs,
@@ -136,7 +136,7 @@ export async function deleteUserProject(projectId: string) {
 
 export async function addMembersInProject(
   projectId: string,
-  newMembers: MemberType[]
+  newMembers: InputMemberType[]
 ) {
   const response = await fetch(
     `${SERVER_URL}/api/user/project/${projectId}/members`,
