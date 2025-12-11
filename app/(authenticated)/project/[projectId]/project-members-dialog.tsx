@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/context/toast-context";
 import { addMembersInProject } from "@/apis";
 import { ProjectWithDetails } from "@/types/api-response";
-import { MemberType } from "@/types";
+import { InputMemberType } from "@/types";
 import { emailRegex } from "@/utils";
 import { X } from "@deemlol/next-icons";
 import Dialog from "@/components/dialog";
@@ -19,14 +19,14 @@ interface Props {
 
 export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
   const [isAddingMember, setIsAddingMember] = useState(false);
-  const [members, setMembers] = useState<MemberType[]>(
+  const [members, setMembers] = useState<InputMemberType[]>(
     project.members.map((member) => ({
       email: member.user.email,
       role: member.role,
     }))
   );
   const [newMemberEmailsInput, setNewMemberEmailsInput] = useState<string>("");
-  const [newMembers, setNewMembers] = useState<MemberType[]>([]);
+  const [newMembers, setNewMembers] = useState<InputMemberType[]>([]);
   // const [removedMembers, setRemovedMembers] = useState<MemberType[]>([]);
 
   const { showToast } = useToast();
@@ -62,6 +62,10 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
     } finally {
       setIsAddingMember(false);
     }
+  };
+
+  const handleRemoveMember = (member: InputMemberType) => {
+    console.log("Remove member:", member);
   };
 
   useEffect(() => {
@@ -109,7 +113,15 @@ export default function ProjectMemberDialog({ open, project, setOpen }: Props) {
               >
                 {member.user.email}
                 {member.role !== "ADMIN" ? (
-                  <span className="mt-0.5 w-3 h-3 flex justify-center items-center aspect-square">
+                  <span
+                    className="mt-0.5 w-3 h-3 flex justify-center items-center aspect-square"
+                    onClick={() =>
+                      handleRemoveMember({
+                        email: member.user.email,
+                        role: member.role,
+                      })
+                    }
+                  >
                     <X
                       size={12}
                       className="inline-block text-slate-400 hover:text-slate-600"
