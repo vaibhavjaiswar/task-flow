@@ -5,9 +5,13 @@ import { getTokenPayloadByVerifying } from "@/utils/jwt";
 import { ServerError } from "@/utils/server-error";
 import { TaskResponseType, ServerResponseType } from "@/types/api-response";
 
+interface ParamsType {
+  params: Promise<{ projectId: string; taskId: string }>;
+}
+
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ taskId: string }> }
+  { params }: ParamsType
 ): Promise<NextResponse<ServerResponseType<TaskResponseType>>> {
   try {
     const cookieStore = await cookies();
@@ -30,7 +34,7 @@ export async function GET(
     }
 
     const { userId, email } = payload;
-    const { taskId } = await params;
+    const { projectId, taskId } = await params;
 
     const user = await prisma.user.findUnique({ where: { email, id: userId } });
 
@@ -41,8 +45,22 @@ export async function GET(
       );
     }
 
+    const projectMember = await prisma.projectMember.findUnique({
+      where: { userId_projectId: { projectId, userId } },
+    });
+
+    if (!projectMember) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "You do not have permission to access this task.",
+        },
+        { status: 403 }
+      );
+    }
+
     const task = await prisma.task.findFirst({
-      where: { id: taskId, creatorId: userId },
+      where: { id: taskId, projectId: projectId },
       include: {
         project: {
           select: { id: true, name: true },
@@ -94,7 +112,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: Promise<{ taskId: string }> }
+  { params }: ParamsType
 ): Promise<NextResponse<ServerResponseType<TaskResponseType>>> {
   try {
     const cookieStore = await cookies();
@@ -117,7 +135,7 @@ export async function PATCH(
     }
 
     const { userId, email } = payload;
-    const { taskId } = await params;
+    const { projectId, taskId } = await params;
 
     const user = await prisma.user.findUnique({ where: { email, id: userId } });
 
@@ -125,6 +143,20 @@ export async function PATCH(
       return NextResponse.json(
         { ok: false, message: "User not found." },
         { status: 404 }
+      );
+    }
+
+    const projectMember = await prisma.projectMember.findUnique({
+      where: { userId_projectId: { projectId, userId } },
+    });
+
+    if (!projectMember) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "You do not have permission to access this task.",
+        },
+        { status: 403 }
       );
     }
 
@@ -139,7 +171,7 @@ export async function PATCH(
     }
 
     const existingTask = await prisma.task.findFirst({
-      where: { id: taskId, creatorId: userId },
+      where: { id: taskId, projectId: projectId },
     });
 
     if (!existingTask) {
@@ -202,7 +234,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ taskId: string }> }
+  { params }: ParamsType
 ): Promise<NextResponse<ServerResponseType<null>>> {
   try {
     const cookieStore = await cookies();
@@ -225,7 +257,7 @@ export async function DELETE(
     }
 
     const { userId, email } = payload;
-    const { taskId } = await params;
+    const { projectId, taskId } = await params;
 
     const user = await prisma.user.findUnique({ where: { email, id: userId } });
 
@@ -236,9 +268,23 @@ export async function DELETE(
       );
     }
 
+    const projectMember = await prisma.projectMember.findUnique({
+      where: { userId_projectId: { projectId, userId } },
+    });
+
+    if (!projectMember) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "You do not have permission to access this task.",
+        },
+        { status: 403 }
+      );
+    }
+
     // Check if the task exists and belongs to the user
     const existingTask = await prisma.task.findFirst({
-      where: { id: taskId, creatorId: userId },
+      where: { id: taskId, projectId: projectId },
     });
 
     if (!existingTask) {
