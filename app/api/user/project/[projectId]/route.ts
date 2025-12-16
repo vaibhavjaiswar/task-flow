@@ -174,13 +174,30 @@ export async function PATCH(
     }
 
     const existingProject = await prisma.project.findFirst({
-      where: { id: projectId, creatorId: userId },
+      where: {
+        AND: [
+          { id: projectId },
+          {
+            OR: [
+              { creatorId: userId },
+              { members: { some: { userId: userId } } },
+            ],
+          },
+        ],
+      },
     });
 
     if (!existingProject) {
       return NextResponse.json(
         { ok: false, message: "Project not found." },
         { status: 404 }
+      );
+    }
+
+    if (existingProject.creatorId !== user.id) {
+      return NextResponse.json(
+        { ok: false, message: "Only the project owner can edit project data." },
+        { status: 403 }
       );
     }
 
@@ -294,13 +311,30 @@ export async function DELETE(
     }
 
     const project = await prisma.project.findFirst({
-      where: { id: projectId, creatorId: userId },
+      where: {
+        AND: [
+          { id: projectId },
+          {
+            OR: [
+              { creatorId: userId },
+              { members: { some: { userId: userId } } },
+            ],
+          },
+        ],
+      },
     });
 
     if (!project) {
       return NextResponse.json(
         { ok: false, message: "Project not found." },
         { status: 404 }
+      );
+    }
+
+    if (project.creatorId !== user.id) {
+      return NextResponse.json(
+        { ok: false, message: "Only the project owner can delete project." },
+        { status: 403 }
       );
     }
 
