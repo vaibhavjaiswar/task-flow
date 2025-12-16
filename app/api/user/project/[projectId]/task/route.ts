@@ -64,10 +64,29 @@ export async function POST(
         projectId,
         creatorId: userId,
       },
+      include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
+      },
     });
 
+    const formattedTask = {
+      ...newTask,
+      creator: newTask.user,
+    };
+
     const responseData: TaskResponseType = {
-      task: newTask,
+      task: formattedTask,
     };
 
     return NextResponse.json(
