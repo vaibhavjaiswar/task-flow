@@ -14,10 +14,11 @@ import TaskHeading from "./task-heading";
 import TaskDescription from "./task-description";
 
 interface Props {
+  projectId: string;
   taskId: string;
 }
 
-export default function TaskPanel({ taskId }: Props) {
+export default function TaskPanel({ projectId, taskId }: Props) {
   const [task, setTask] = useState<TaskType | null>(null);
   const [isFetchingTask, setIsFetchingTask] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export default function TaskPanel({ taskId }: Props) {
       const showLoader = !options?.shouldUpdateInBackground;
       try {
         if (showLoader) setIsFetchingTask(true);
-        const response = await fetchUserTask(taskId);
+        const response = await fetchUserTask(projectId, taskId);
         const { ok, message } = response;
 
         if (!ok) {
@@ -67,7 +68,7 @@ export default function TaskPanel({ taskId }: Props) {
   );
 
   const updateTaskHeading = async (taskName: string) => {
-    const response = await updateUserTask(taskId, { taskName });
+    const response = await updateUserTask(projectId, taskId, { taskName });
     if (response.ok) {
       const task = response.data?.task;
       if (task) setTask(task);
@@ -76,7 +77,9 @@ export default function TaskPanel({ taskId }: Props) {
   };
 
   const updateTaskDescription = async (taskDescription: string) => {
-    const response = await updateUserTask(taskId, { taskDescription });
+    const response = await updateUserTask(projectId, taskId, {
+      taskDescription,
+    });
     if (response.ok) {
       const task = response.data?.task;
       if (task) setTask(task);
@@ -87,7 +90,9 @@ export default function TaskPanel({ taskId }: Props) {
   const handlePriorityChange = async (taskPriority: TaskPriority) => {
     try {
       setPriority(taskPriority);
-      const response = await updateUserTask(taskId, { taskPriority });
+      const response = await updateUserTask(projectId, taskId, {
+        taskPriority,
+      });
       if (response.ok) {
         const task = response.data?.task;
         if (task) setTask(task);
@@ -118,7 +123,7 @@ export default function TaskPanel({ taskId }: Props) {
   const handleStatusChange = async (taskStatus: TaskStatus) => {
     try {
       setStatus(taskStatus);
-      const response = await updateUserTask(taskId, { taskStatus });
+      const response = await updateUserTask(projectId, taskId, { taskStatus });
       if (response.ok) {
         const task = response.data?.task;
         if (task) setTask(task);
@@ -210,14 +215,18 @@ export default function TaskPanel({ taskId }: Props) {
         <span>Task</span>
         <span>/</span>
         <Link
-          href={`/task/${task.id}`}
+          href={`/project/${task.project.id}/task/${task.id}`}
           title={task.name}
           className="inline-block text-slate-800! max-w-44! truncate"
         >
           {task.name}
         </Link>
       </div>
-      <TaskHeading task={task} onUpdateHeading={updateTaskHeading} />
+      <TaskHeading
+        projectId={projectId}
+        task={task}
+        onUpdateHeading={updateTaskHeading}
+      />
       <TaskDescription
         description={task?.description}
         onUpdateDescription={updateTaskDescription}

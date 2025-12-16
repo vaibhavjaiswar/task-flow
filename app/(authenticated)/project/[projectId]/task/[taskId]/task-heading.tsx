@@ -8,13 +8,18 @@ import DeleteTaskDialog from "./delete-task";
 import LoadingButton from "@/components/loading-button";
 
 interface Props {
+  projectId: string;
   task: Task;
   onUpdateHeading: (
     taskName: string
   ) => Promise<ServerResponseType<TaskResponseType>>;
 }
 
-export default function TaskHeading({ task, onUpdateHeading }: Props) {
+export default function TaskHeading({
+  projectId,
+  task,
+  onUpdateHeading,
+}: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState(task.name);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -120,6 +125,7 @@ export default function TaskHeading({ task, onUpdateHeading }: Props) {
       </Popup>
       <DeleteTaskDialog
         open={showDeleteTaskDialog}
+        projectId={projectId}
         task={task}
         setOpen={setShowDeleteTaskDialog}
       />

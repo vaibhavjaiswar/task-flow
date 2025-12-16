@@ -193,11 +193,14 @@ export async function createNewTaskInProject(
   return data;
 }
 
-export async function fetchUserTask(taskId: string) {
-  const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+export async function fetchUserTask(projectId: string, taskId: string) {
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/task/${taskId}`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 
   const data: ServerResponseType<TaskResponseType> = await response.json();
 
@@ -212,6 +215,7 @@ interface updateUserTaskArgsType {
 }
 
 export async function updateUserTask(
+  projectId: string,
   taskId: string,
   {
     taskName,
@@ -220,26 +224,32 @@ export async function updateUserTask(
     taskPriority,
   }: updateUserTaskArgsType
 ) {
-  const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      name: taskName,
-      description: taskDescription,
-      status: taskStatus,
-      priority: taskPriority,
-    }),
-  });
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/task/${taskId}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: taskName,
+        description: taskDescription,
+        status: taskStatus,
+        priority: taskPriority,
+      }),
+    }
+  );
 
   const data: ServerResponseType<TaskResponseType> = await response.json();
 
   return data;
 }
 
-export async function deleteUserTask(taskId: string) {
-  const response = await fetch(`${SERVER_URL}/api/user/task/${taskId}`, {
-    method: "DELETE",
-  });
+export async function deleteUserTask(projectId: string, taskId: string) {
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/task/${taskId}`,
+    {
+      method: "DELETE",
+    }
+  );
 
   const data: ServerResponseType<null> = await response.json();
 

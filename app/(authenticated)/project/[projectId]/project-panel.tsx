@@ -176,7 +176,7 @@ export default function ProjectPanel({ projectId }: Props) {
             {project.tasks.map((task) => (
               <Link
                 key={task.id}
-                href={`/task/${task.id}`}
+                href={`/project/${task.projectId}/task/${task.id}`}
                 className="block no-underline!"
               >
                 <li className="px-3 py-2 bg-white hover:bg-slate-50 flex items-center justify-between border border-slate-200 rounded-md transition">

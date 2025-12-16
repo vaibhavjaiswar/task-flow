@@ -8,11 +8,17 @@ import LoadingButton from "@/components/loading-button";
 
 interface Props {
   open: boolean;
+  projectId: string;
   task: Task;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function DeleteTaskDialog({ open, task, setOpen }: Props) {
+export default function DeleteTaskDialog({
+  open,
+  projectId,
+  task,
+  setOpen,
+}: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { showToast } = useToast();
@@ -21,7 +27,7 @@ export default function DeleteTaskDialog({ open, task, setOpen }: Props) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await deleteUserTask(task.id);
+      const response = await deleteUserTask(projectId, task.id);
       const { ok, message } = response;
 
       if (!ok) {
