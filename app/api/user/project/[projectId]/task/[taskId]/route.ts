@@ -163,7 +163,7 @@ export async function PATCH(
     const body = await request.json();
     const { name, description, status, priority } = body;
 
-    if (!name && !description && !status && !priority) {
+    if (!name && description === undefined && !status && !priority) {
       return NextResponse.json(
         { ok: false, message: "Nothing to update." },
         { status: 400 }
@@ -178,6 +178,16 @@ export async function PATCH(
       return NextResponse.json(
         { ok: false, message: "Project not found." },
         { status: 404 }
+      );
+    }
+
+    if (projectMember.role !== "ADMIN" && existingTask.creatorId !== user.id) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "You do not have permission to edit this task.",
+        },
+        { status: 403 }
       );
     }
 
@@ -282,15 +292,24 @@ export async function DELETE(
       );
     }
 
-    // Check if the task exists and belongs to the user
     const existingTask = await prisma.task.findFirst({
       where: { id: taskId, projectId: projectId },
     });
 
     if (!existingTask) {
       return NextResponse.json(
-        { ok: false, message: "Task not found or you do not have permission." },
+        { ok: false, message: "Task not found." },
         { status: 404 }
+      );
+    }
+
+    if (projectMember.role !== "ADMIN" && existingTask.creatorId !== user.id) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "You do not have permission to delete this task.",
+        },
+        { status: 403 }
       );
     }
 

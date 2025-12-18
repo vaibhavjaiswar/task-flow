@@ -42,7 +42,6 @@ export async function GET(
     }
 
     const project = await prisma.project.findFirst({
-      // where: { id: projectId, creatorId: userId },
       where: {
         AND: [
           { id: projectId },
@@ -166,7 +165,7 @@ export async function PATCH(
     const body = await request.json();
     const { name, description } = body;
 
-    if (!name && !description) {
+    if (!name && description === undefined) {
       return NextResponse.json(
         { ok: false, message: "Nothing to update." },
         { status: 400 }

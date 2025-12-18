@@ -51,6 +51,7 @@ export default function DeleteTaskDialog({
         type: "error",
         message: errorMessage,
       });
+      setOpen(false);
     } finally {
       setIsDeleting(false);
     }
