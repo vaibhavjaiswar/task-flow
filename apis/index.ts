@@ -7,6 +7,7 @@ import {
 } from "@/types";
 import {
   LoginResponseType,
+  ProjectMembersResponseType,
   ProjectResponseType,
   RegisterResponseType,
   ServerResponseType,
@@ -135,6 +136,21 @@ export async function deleteUserProject(projectId: string) {
   return data;
 }
 
+export async function fetchProjectMembers(projectId: string) {
+  const response = await fetch(
+    `${SERVER_URL}/api/user/project/${projectId}/members`,
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
+  const data: ServerResponseType<ProjectMembersResponseType> =
+    await response.json();
+
+  return data;
+}
+
 export async function addMembersInProject(
   projectId: string,
   newMembers: InputMemberType[]
@@ -212,6 +228,7 @@ interface updateUserTaskArgsType {
   taskDescription?: string;
   taskStatus?: TaskStatus;
   taskPriority?: TaskPriority;
+  taskAssignedToEmail?: string;
 }
 
 export async function updateUserTask(
@@ -222,6 +239,7 @@ export async function updateUserTask(
     taskDescription,
     taskStatus,
     taskPriority,
+    taskAssignedToEmail,
   }: updateUserTaskArgsType
 ) {
   const response = await fetch(
@@ -234,6 +252,7 @@ export async function updateUserTask(
         description: taskDescription,
         status: taskStatus,
         priority: taskPriority,
+        assignedToEmail: taskAssignedToEmail,
       }),
     }
   );

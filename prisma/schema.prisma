@@ -29,6 +29,9 @@ model User {
 
   // Tasks created by the user
   tasks     Task[]
+
+  // Tasks assigned to the user (reverse relation to Task.assignedTo)
+  tasksAssigned Task[]   @relation("AssignedTasks")
 }
 
 model Project {
@@ -66,6 +69,10 @@ model Task {
   // Foreign key to User or Task creator
   creatorId   Int
   user        User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+
+  // Foreign key to User (assigned to user)
+  assignedToId Int?
+  assignedTo   User?         @relation("AssignedTasks", fields: [assignedToId], references: [id])
 }
 
 enum TaskStatus {

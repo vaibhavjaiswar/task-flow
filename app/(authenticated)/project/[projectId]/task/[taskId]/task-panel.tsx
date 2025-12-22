@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { TaskPriority, TaskStatus } from "@/prisma/generated/client";
-import { fetchUserTask, updateUserTask } from "@/apis";
+import { fetchProjectMembers, fetchUserTask, updateUserTask } from "@/apis";
 import { useToast } from "@/context/toast-context";
 import { AlertCircle, Loader } from "@deemlol/next-icons";
 import { TaskPrirotyLabel, TaskStatusLabel, timeAgo } from "@/utils";
-import { TaskType } from "@/types/api-response";
+import { MemberType, TaskType } from "@/types/api-response";
 import Select from "@/components/select";
 import TaskHeading from "./task-heading";
 import TaskDescription from "./task-description";
@@ -24,6 +24,11 @@ export default function TaskPanel({ projectId, taskId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [priority, setPriority] = useState<TaskPriority>();
   const [status, setStatus] = useState<TaskStatus>();
+  const [assignedTo, setAssignedTo] = useState<string | null>(null);
+  const [projectMembers, setProjectMembers] = useState<MemberType[] | null>(
+    null
+  );
+  // const [isFetchingProjectMembers, setIsFetchingProjectMembers] = useState(false);
 
   const { showToast } = useToast();
 
@@ -48,6 +53,7 @@ export default function TaskPanel({ projectId, taskId }: Props) {
         setTask(response.data?.task ?? null);
         setPriority(response.data?.task.priority);
         setStatus(response.data?.task.status);
+        setAssignedTo(response.data?.task.assignedTo?.email ?? null);
       } catch (error) {
         console.error(error);
 
@@ -66,6 +72,40 @@ export default function TaskPanel({ projectId, taskId }: Props) {
     },
     [taskId, showToast]
   );
+
+  const fetchProjectMembersCall = useCallback(async () => {
+    try {
+      // setIsFetchingProjectMembers(true);
+      const response = await fetchProjectMembers(projectId);
+      const { ok, message } = response;
+
+      if (!ok) {
+        console.error(
+          "Error occured while fetching project members",
+          response.error
+        );
+        setError(message);
+        // setIsFetchingProjectMembers(false);
+        return;
+      }
+
+      setProjectMembers(response.data?.members ?? null);
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while fetching task.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+    } finally {
+      // setIsFetchingProjectMembers(false);
+    }
+  }, [taskId, showToast]);
 
   const updateTaskHeading = async (taskName: string) => {
     const response = await updateUserTask(projectId, taskId, { taskName });
@@ -151,8 +191,45 @@ export default function TaskPanel({ projectId, taskId }: Props) {
     }
   };
 
+  const handleTaskAssignedToChange = async (memberEmail: string) => {
+    const previousAssignedTo = assignedTo;
+    try {
+      setAssignedTo(memberEmail);
+      const response = await updateUserTask(projectId, taskId, {
+        taskAssignedToEmail: memberEmail,
+      });
+      if (response.ok) {
+        const task = response.data?.task;
+        if (task) setTask(task);
+      }
+      if (!response.ok) {
+        setStatus(task?.status);
+        showToast({
+          type: "error",
+          message: response.message,
+        });
+        return;
+      }
+    } catch (error) {
+      console.error(error);
+
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error occured while updating task status.";
+
+      showToast({
+        type: "error",
+        message: errorMessage,
+      });
+
+      setAssignedTo(previousAssignedTo);
+    }
+  };
+
   useEffect(() => {
     fetchUserTaskCall();
+    fetchProjectMembersCall();
   }, [fetchUserTaskCall]);
 
   const taskPriorityEntries = Object.entries(TaskPrirotyLabel) as [
@@ -231,20 +308,27 @@ export default function TaskPanel({ projectId, taskId }: Props) {
         description={task?.description}
         onUpdateDescription={updateTaskDescription}
       />
-      <div className="--mx-2 p-3 max-w-sm bg-slate-100 flex items-center gap-4 border border-slate-200 rounded-md">
-        {task.creator.name && (
-          <div className="h-10 aspect-square text-lg text-slate-100 bg-slate-800 rounded-full flex justify-center items-center">
-            {task.creator.name.charAt(0)}
-          </div>
-        )}
-        <div>
-          <p>{task.creator.name}</p>
-          <p className="text-sm text-slate-400">Task Creator</p>
-        </div>
-      </div>
-      <div className="--mx-2 mb-10 p-6 bg-white border border-slate-200 rounded shadow-sm">
+      <div className="--mx-2 p-6 bg-white border border-slate-200 rounded shadow-sm">
         <h2 className="text-lg font-semibold mb-4">Task Details</h2>
         <div className="space-y-3">
+          <div className="min-h-[37.6px] flex items-center">
+            <div className="inline-block w-52 font-semibold">Assigned to:</div>
+            <div className="inline-block grow">
+              <Select
+                value={assignedTo}
+                onChange={handleTaskAssignedToChange}
+                options={
+                  projectMembers
+                    ? projectMembers.map((member) => [
+                        member.user.email,
+                        member.user.name,
+                      ])
+                    : []
+                }
+                placeholder="Select task assignee..."
+              />
+            </div>
+          </div>
           <div className="min-h-[37.6px] flex items-center">
             <div className="inline-block w-52 font-semibold">Status:</div>
             <div className="inline-block grow">
@@ -268,10 +352,6 @@ export default function TaskPanel({ projectId, taskId }: Props) {
             </div>
           </div>
           <div className="min-h-[37.6px] flex items-center">
-            <div className="inline-block w-52 font-semibold">Created by:</div>
-            <div className="inline-block grow">{task.creatorId}</div>
-          </div>
-          <div className="min-h-[37.6px] flex items-center">
             <div className="inline-block w-52 font-semibold">Due Date:</div>
             <div className="inline-block grow">
               {task.dueDate ? (
@@ -281,6 +361,17 @@ export default function TaskPanel({ projectId, taskId }: Props) {
               )}
             </div>
           </div>
+        </div>
+      </div>
+      <div className="--mx-2 mb-10 p-3 max-w-sm bg-slate-100 flex items-center gap-4 border border-slate-200 rounded-md">
+        {task.creator.name && (
+          <div className="h-10 aspect-square text-lg text-slate-100 bg-slate-800 rounded-full flex justify-center items-center">
+            {task.creator.name.charAt(0)}
+          </div>
+        )}
+        <div>
+          <p>{task.creator.name}</p>
+          <p className="text-sm text-slate-400">Task Creator</p>
         </div>
       </div>
       <div className="px-2 text-sm text-slate-400 space-y-1">

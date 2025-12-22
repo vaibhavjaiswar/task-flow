@@ -71,6 +71,12 @@ export async function GET(
             name: true,
           },
         },
+        assignedTo: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -81,8 +87,10 @@ export async function GET(
       );
     }
 
+    const formattedTask = { ...task, creator: task.user, user: undefined };
+
     const responseData: TaskResponseType = {
-      task: { ...task, creator: task.user },
+      task: formattedTask,
     };
 
     return NextResponse.json(
@@ -161,9 +169,15 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { name, description, status, priority } = body;
+    const { name, description, status, priority, assignedToEmail } = body;
 
-    if (!name && description === undefined && !status && !priority) {
+    if (
+      !name &&
+      description === undefined &&
+      !status &&
+      !priority &&
+      !assignedToEmail
+    ) {
       return NextResponse.json(
         { ok: false, message: "Nothing to update." },
         { status: 400 }
@@ -191,6 +205,17 @@ export async function PATCH(
       );
     }
 
+    const assignedToUser = await prisma.user.findUnique({
+      where: { email: assignedToEmail },
+    });
+
+    if (!assignedToUser) {
+      return NextResponse.json(
+        { ok: false, message: "User not found." },
+        { status: 404 }
+      );
+    }
+
     const updatedTask = await prisma.task.update({
       where: { id: taskId },
       data: {
@@ -198,6 +223,7 @@ export async function PATCH(
         description: description ?? existingTask.description,
         status: status ?? existingTask.status,
         priority: priority ?? existingTask.priority,
+        assignedToId: assignedToUser.id ?? existingTask.assignedToId,
       },
       include: {
         project: {
@@ -209,12 +235,22 @@ export async function PATCH(
             name: true,
           },
         },
+        assignedTo: {
+          select: {
+            email: true,
+            name: true,
+          },
+        },
       },
     });
 
-    const responseData: TaskResponseType = {
-      task: { ...updatedTask, creator: updatedTask.user },
+    const formattedTask = {
+      ...updatedTask,
+      creator: updatedTask.user,
+      user: undefined,
     };
+
+    const responseData: TaskResponseType = { task: formattedTask };
 
     return NextResponse.json(
       {

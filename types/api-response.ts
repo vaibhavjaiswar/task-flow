@@ -66,8 +66,13 @@ export interface ProjectResponseType {
 export type TaskType = Task & {
   project: Pick<Project, "id" | "name">;
   creator: Pick<User, "email" | "name">;
+  assignedTo: Pick<User, "email" | "name"> | null;
 };
 
 export interface TaskResponseType {
   task: TaskType;
+}
+
+export interface ProjectMembersResponseType {
+  members: MemberType[];
 }
